@@ -76,7 +76,7 @@ with tab1:
             df = pd.DataFrame(readings[:10])
             df['reading_date'] = pd.to_datetime(df['reading_date'])
             df = df.sort_values('reading_date', ascending=False)
-            st.dataframe(df[['reading_date', 'reading_value', 'meter_id', 'customer_id']], use_container_width=True)
+            st.dataframe(df[['reading_date', 'reading_value', 'meter_id', 'customer_id']], width='stretch')
         else:
             st.warning("No meter readings found. Add some data first!")
     
@@ -116,14 +116,15 @@ with tab2:
         
         col1, col2 = st.columns(2)
         with col1:
-            meter_id = st.text_input("Meter ID", value="METER001")
-            customer_id = st.text_input("Customer ID", value="CUST001")
-            reading_value = st.number_input("Reading Value (kWh)", min_value=0.0, value=4600.0, step=0.1)
+            meter_id = st.text_input("Meter ID", value="METER001", key="wf_meter_id")
+            customer_id = st.text_input("Customer ID", value="CUST001", key="wf_customer_id")
+            reading_value = st.number_input("Reading Value (kWh)", min_value=0.0, value=4600.0, step=0.1, key="wf_reading")
         
         with col2:
-            reading_date = st.date_input("Reading Date", value=datetime.now())
-            customer_phone = st.text_input("Customer Phone", value="+1234567890")
-            user_id = st.text_input("User ID (for Auth)", value="auth0|user123")
+            reading_date = st.date_input("Reading Date", value=datetime.now(), key="wf_date")
+            customer_phone = st.text_input("Customer Phone", value="+1234567890", key="wf_phone")
+            user_id = st.text_input("User ID (for Auth)", value="auth0|user123", key="wf_user_id")
+            jwt_token = st.text_input("JWT Token (optional - for real Auth0 verification)", value="", type="password", key="wf_jwt_token")
         
         submit = st.form_submit_button("🚀 Run Complete Workflow", type="primary")
     
@@ -138,17 +139,41 @@ with tab2:
                 from services.ai_agent_service import AIAgentService
                 from services.payment_service import PaymentService
                 from services.whatsapp_service import WhatsAppService
+                from services.auth_service import AuthService
                 
                 ai_service = AIAgentService()
                 payment_service = PaymentService()
                 whatsapp_service = WhatsAppService()
+                auth_service = AuthService()
                 
                 # Step 1: Webhook (already received)
                 st.success("✅ Step 1: Webhook received meter reading")
                 progress_bar.progress(8)
                 
-                # Step 2: Auth0 Verification (simulated)
-                st.info("🔐 Step 2: Auth0 token verification... (Simulated - Passed)")
+                # Step 2: Auth0 Verification
+                st.info("🔐 Step 2: Auth0 token verification...")
+                
+                if jwt_token:
+                    # Real JWT verification
+                    if auth_service.auth0_enabled:
+                        payload = auth_service.verify_token(jwt_token)
+                        if payload:
+                            st.success(f"✅ Step 2: Auth0 JWT verified - User: {payload.get('sub', 'Unknown')}")
+                        else:
+                            st.error("❌ Step 2: Invalid or expired JWT token")
+                            st.stop()
+                    else:
+                        st.error("❌ Step 2: Auth0 not configured - Cannot verify JWT token")
+                        st.info("💡 Configure AUTH0_DOMAIN and AUTH0_API_IDENTIFIER in .env to enable real verification")
+                        st.stop()
+                else:
+                    # Fallback to user_id validation
+                    if user_id and user_id.startswith("auth0|"):
+                        st.warning(f"⚠️ Step 2: Bypassing Auth0 (no JWT provided) - User: {user_id}")
+                    else:
+                        st.error("❌ Step 2: Invalid user ID format - must start with 'auth0|' or provide JWT token")
+                        st.stop()
+                        
                 progress_bar.progress(15)
                 
                 # Step 3: Get Historical Readings
@@ -253,7 +278,7 @@ with tab2:
                 notification_message = ai_service.generate_notification_message(
                     customer_id=customer_id,
                     bill_amount=bill_calculation['total_amount'],
-                    consumption=consumption,
+                    consumption_kwh=consumption,
                     payment_link=payment_link['url']
                 )
                 st.success(f"✅ Step 11: Notification message generated")
@@ -271,14 +296,15 @@ with tab2:
                 
                 # Step 13: Log Notification
                 st.info("📋 Step 13: Logging notification...")
-                db.log_notification(
-                    bill_id=bill_id,
-                    customer_id=customer_id,
-                    channel="whatsapp",
-                    message=notification_message,
-                    status="sent",
-                    whatsapp_message_id=whatsapp_result['message_id']
-                )
+                db.log_notification({
+                    "bill_id": bill_id,
+                    "customer_id": customer_id,
+                    "channel": "whatsapp",
+                    "message": notification_message,
+                    "status": "sent",
+                    "whatsapp_message_id": whatsapp_result['message_id'],
+                    "sent_at": datetime.now().isoformat()
+                })
                 st.success("✅ Step 13: Notification logged")
                 progress_bar.progress(100)
                 
@@ -484,13 +510,13 @@ Client Secret: MYLP0sn...
         with st.form("test_auth_api"):
             col1, col2 = st.columns(2)
             with col1:
-                meter_id = st.text_input("Meter ID", value="METER001")
-                customer_id = st.text_input("Customer ID", value="CUST001")
-                reading_value = st.number_input("Reading Value", value=4800.0)
+                meter_id = st.text_input("Meter ID", value="METER001", key="auth_meter_id")
+                customer_id = st.text_input("Customer ID", value="CUST001", key="auth_customer_id")
+                reading_value = st.number_input("Reading Value", value=4800.0, key="auth_reading")
             
             with col2:
-                customer_phone = st.text_input("Phone", value="+919876543210")
-                reading_date = st.date_input("Reading Date", value=datetime.now())
+                customer_phone = st.text_input("Phone", value="+919876543210", key="auth_phone")
+                reading_date = st.date_input("Reading Date", value=datetime.now(), key="auth_date")
             
             if st.form_submit_button("🚀 Test Authenticated Request", type="primary"):
                 try:
@@ -575,6 +601,32 @@ with tab4:
     - Simulate Stripe webhook events
     """)
     
+    # Quick Pay Section
+    st.markdown("### 💳 Quick Payment")
+    col1, col2, col3 = st.columns([2, 2, 1])
+    
+    with col1:
+        quick_bill_id = st.number_input("Enter Bill ID to Pay", min_value=1, value=1, step=1, key="quick_pay_bill_id")
+    
+    with col2:
+        if st.button("🔍 Fetch Bill Details", type="secondary", key="quick_fetch"):
+            try:
+                bill = db.get_bill_by_id(quick_bill_id)
+                if bill:
+                    st.session_state['quick_pay_bill'] = bill
+                else:
+                    st.error(f"Bill #{quick_bill_id} not found")
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
+    
+    with col3:
+        if 'quick_pay_bill' in st.session_state and st.session_state['quick_pay_bill']:
+            bill = st.session_state['quick_pay_bill']
+            if bill.get('status', '').lower() == 'pending' and bill.get('payment_link'):
+                st.markdown(f"[**💳 Pay ₹{bill.get('amount', 0):,.2f}**]({bill.get('payment_link')})")
+            elif bill.get('status', '').lower() == 'paid':
+                st.success("✅ Already Paid")
+    
     st.markdown("---")
     
     # Sub-tabs for payment features
@@ -630,6 +682,13 @@ with tab4:
                             st.write("**Payment Information:**")
                             if bill.get('payment_link'):
                                 st.write(f"Payment Link: [Click here]({bill.get('payment_link')})")
+                                
+                                # Add Pay Now button if bill is pending
+                                if bill.get('status', '').lower() == 'pending':
+                                    if st.button("💳 Pay Now", key=f"pay_bill_{bill_id}", type="primary"):
+                                        st.info(f"🔗 Opening payment link...")
+                                        st.markdown(f"[**Click here to pay ₹{bill.get('amount', 0):.2f}**]({bill.get('payment_link')})")
+                                        st.success("💡 Click the link above to complete payment in a new tab")
                             else:
                                 st.write("Payment Link: Not available")
                             
@@ -655,7 +714,7 @@ with tab4:
         col1, col2 = st.columns([3, 1])
         
         with col1:
-            customer_id_search = st.text_input("Customer ID", value="CUST001")
+            customer_id_search = st.text_input("Customer ID", value="CUST001", key="payment_customer_search")
         with col2:
             limit = st.number_input("Limit", min_value=1, max_value=100, value=10)
         
@@ -692,20 +751,35 @@ with tab4:
                     
                     st.dataframe(
                         df[available_columns],
-                        use_container_width=True,
+                        width='stretch',
                         hide_index=True
                     )
                     
-                    # Individual bill details
-                    with st.expander("📋 View Individual Bills"):
+                    # Individual bill details with payment option
+                    with st.expander("📋 View Individual Bills & Pay"):
                         for bill in bills:
                             with st.container():
-                                st.write(f"**Bill ID: {bill.get('id')}** - Status: `{bill.get('status')}`")
-                                cols = st.columns(4)
-                                cols[0].write(f"Amount: ₹{bill.get('amount', 0):,.2f}")
-                                cols[1].write(f"Consumption: {bill.get('consumption_kwh', 0):.2f} kWh")
-                                cols[2].write(f"Period: {bill.get('billing_period_end')}")
-                                cols[3].write(f"Created: {bill.get('created_at')}")
+                                col_a, col_b = st.columns([3, 1])
+                                
+                                with col_a:
+                                    st.write(f"**Bill ID: {bill.get('id')}** - Status: `{bill.get('status')}`")
+                                    cols = st.columns(4)
+                                    cols[0].write(f"Amount: ₹{bill.get('amount', 0):,.2f}")
+                                    cols[1].write(f"Consumption: {bill.get('consumption_kwh', 0):.2f} kWh")
+                                    cols[2].write(f"Period: {bill.get('billing_period_end')}")
+                                    cols[3].write(f"Created: {bill.get('created_at')}")
+                                
+                                with col_b:
+                                    # Add payment button for pending bills
+                                    if bill.get('status', '').lower() == 'pending' and bill.get('payment_link'):
+                                        if st.button(f"💳 Pay ₹{bill.get('amount', 0):,.2f}", 
+                                                   key=f"pay_customer_bill_{bill.get('id')}", 
+                                                   type="primary",
+                                                   use_container_width=True):
+                                            st.markdown(f"[**Click to Pay Now**]({bill.get('payment_link')})")
+                                    elif bill.get('status', '').lower() == 'paid':
+                                        st.success("✅ Paid")
+                                
                                 st.markdown("---")
                 else:
                     st.warning(f"No bills found for customer {customer_id_search}")
@@ -1025,7 +1099,7 @@ with tab6:
     with col2:
         st.subheader("👤 Customer Bills")
         
-        customer_id_input = st.text_input("Customer ID", value="CUST001")
+        customer_id_input = st.text_input("Customer ID", value="CUST001", key="payment_customer_bills")
         num_bills = st.slider("Number of bills", 1, 20, 5)
         
         if st.button("📋 Get Bills", type="secondary"):
@@ -1206,10 +1280,10 @@ with tab7:
     col1, col2 = st.columns(2)
     
     with col1:
-        tariff_type = st.selectbox("Tariff Type", ["residential", "commercial"])
-        consumption = st.number_input("Consumption (kWh)", min_value=0.0, value=250.0, step=10.0)
-        connected_load = st.number_input("Connected Load (KW)", min_value=0.0, value=7.0, step=0.5)
-        previous_outstanding = st.number_input("Previous Outstanding (₹)", min_value=0.0, value=0.0, step=100.0)
+        tariff_type = st.selectbox("Tariff Type", ["residential", "commercial"], key="tariff_type_calc")
+        consumption = st.number_input("Consumption (kWh)", min_value=0.0, value=250.0, step=10.0, key="consumption_calc")
+        connected_load = st.number_input("Connected Load (KW)", min_value=0.0, value=7.0, step=0.5, key="load_calc")
+        previous_outstanding = st.number_input("Previous Outstanding (₹)", min_value=0.0, value=0.0, step=100.0, key="outstanding_calc")
     
     with col2:
         if st.button("💡 Calculate Bill", type="primary"):
@@ -1256,8 +1330,8 @@ with tab8:
         st.subheader("➕ Add New Reading")
         
         with st.form("add_reading"):
-            meter_id = st.text_input("Meter ID", value="METER001")
-            customer_id = st.text_input("Customer ID", value="CUST001")
+            meter_id = st.text_input("Meter ID", value="METER001", key="add_meter_id")
+            customer_id = st.text_input("Customer ID", value="CUST001", key="add_customer_id")
             reading_value = st.number_input("Reading Value (kWh)", min_value=0.0, step=0.1)
             reading_date = st.date_input("Reading Date", value=datetime.now())
             
