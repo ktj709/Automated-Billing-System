@@ -66,9 +66,12 @@ class WhatsAppService:
             "Content-Type": "application/json"
         }
         
+        # Clean phone number - remove '+' and any spaces
+        clean_phone = to_phone.replace('+', '').replace(' ', '').replace('-', '')
+        
         payload = {
             "messaging_product": "whatsapp",
-            "to": to_phone,
+            "to": clean_phone,
             "type": "text",
             "text": {
                 "body": message
@@ -96,12 +99,21 @@ class WhatsAppService:
             }
         
         except requests.exceptions.RequestException as e:
-            logger.error(f"WhatsApp API error: {e}")
+            error_detail = str(e)
+            # Try to extract API error response
+            if hasattr(e, 'response') and e.response is not None:
+                try:
+                    error_data = e.response.json()
+                    error_detail = f"{e} - API Response: {error_data}"
+                except:
+                    error_detail = f"{e} - Status: {e.response.status_code}, Text: {e.response.text[:200]}"
+            
+            logger.error(f"WhatsApp API error: {error_detail}")
             return {
                 "message_id": None,
                 "status": "failed",
                 "success": False,
-                "error": str(e),
+                "error": error_detail,
                 "mock": False
             }
     

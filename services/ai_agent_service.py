@@ -128,45 +128,28 @@ Respond with JSON: {{"valid": true/false, "reason": "explanation", "confidence":
         payment_link: str
     ) -> str:
         """
-        Generate a friendly WhatsApp notification message
+        Generate a friendly WhatsApp notification message in SMS-style format
         """
+        from datetime import datetime, timedelta
         
-        # Fallback message if AI not enabled
-        if not self.enabled:
-            from datetime import datetime, timedelta
-            due_date = (datetime.now() + timedelta(days=15)).strftime("%d %b %Y")
-            return f"Hello! Your electricity bill is ready. Amount: ₹{bill_amount:.2f} for {consumption_kwh:.1f} kWh. Pay here: {payment_link}. Due: {due_date}"
+        # Calculate due date (15 days from now)
+        due_date = (datetime.now() + timedelta(days=15)).strftime("%m/%d")
         
-        prompt = f"""You are a friendly notification agent.
-
-Customer ID: {customer_id}
-Bill Amount: ${bill_amount}
-Consumption: {consumption_kwh} kWh
-Payment Link: {payment_link}
-
-Create a polite and friendly WhatsApp message about their electricity bill.
-Include:
-- Greeting
-- Bill amount
-- Consumption
-- Payment link
-- Due date (assume 15 days from now)
-
-Keep it under 300 characters and professional but warm."""
+        # Get last 4 digits of customer ID for account reference
+        account_ending = customer_id[-4:] if len(customer_id) >= 4 else customer_id.zfill(4)
         
-        try:
-            response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a customer service expert. Create brief, friendly messages."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=150
-            )
-            
-            return response.choices[0].message.content.strip()
+        # Format amount with currency symbol
+        if bill_amount < 100:
+            amount_str = f"${bill_amount:.2f}"
+        else:
+            amount_str = f"${bill_amount:.0f}"
         
-        except Exception as e:
-            # Fallback message
-            return f"Hello! Your electricity bill is ready. Amount: ${bill_amount:.2f} for {consumption_kwh:.1f} kWh. Pay here: {payment_link}. Due in 15 days."
+        # Create SMS-style message
+        message = (
+            f"Optimum: Your bill is due soon. "
+            f"Avoid late fees, pay {amount_str} by {due_date}. "
+            f"To pay now using acct ending {account_ending} reply PAY. "
+            f"Questions? Tap {payment_link} to chat."
+        )
+        
+        return message
