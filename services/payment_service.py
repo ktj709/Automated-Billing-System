@@ -79,7 +79,7 @@ class PaymentService:
             # Convert amount to smallest currency unit (paise for INR, cents for USD)
             amount_smallest = int(amount * 100)
             
-            # Prepare metadata
+            # Prepare metadata - include all necessary info for webhook
             metadata = {
                 "bill_id": str(bill_id) if bill_id else "N/A",
                 "customer_id": customer_id or "N/A",
@@ -106,6 +106,9 @@ class PaymentService:
                 }],
                 metadata=metadata
             )
+            
+            # Add payment_link_id to metadata for tracking
+            metadata['payment_link_id'] = payment_link.id
             
             logger.info(f"Created payment link {payment_link.id} for bill {bill_id}")
             return {

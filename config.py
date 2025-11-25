@@ -38,6 +38,9 @@ class Config:
     WHATSAPP_PHONE_NUMBER_ID = os.getenv('WHATSAPP_PHONE_NUMBER_ID', '')
     WHATSAPP_ACCESS_TOKEN = os.getenv('WHATSAPP_ACCESS_TOKEN', '')
     
+    # Discord
+    DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL', '')
+    
     # Auth0
     AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN', '')
     AUTH0_API_IDENTIFIER = os.getenv('AUTH0_API_IDENTIFIER', '')

@@ -196,8 +196,8 @@ class DatabaseService:
                 'updated_at': datetime.now().isoformat()
             }
             
-            if payment_date:
-                update_data['payment_date'] = payment_date
+            # Note: payment_date column doesn't exist in Supabase schema
+            # Payment date is tracked in payment_events table instead
             
             if self.use_supabase:
                 response = self.supabase.table('bills')\
@@ -292,6 +292,47 @@ class DatabaseService:
         with self.get_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 cur.execute(query, (customer_id, limit))
+                return [dict(row) for row in cur.fetchall()]
+    
+    @retry(max_attempts=3, delay=1, backoff=2, exceptions=(Exception,))
+    def get_all_bills(self, status: Optional[str] = None, limit: Optional[int] = None) -> List[Dict]:
+        """Get all bills with optional status filter"""
+        logger.debug(f"Fetching all bills (status={status}, limit={limit})")
+        
+        try:
+            if self.use_supabase:
+                query = self.supabase.table('bills').select('*')
+                
+                if status:
+                    query = query.eq('status', status)
+                
+                query = query.order('created_at', desc=True)
+                
+                if limit:
+                    query = query.limit(limit)
+                
+                response = query.execute()
+                logger.info(f"Retrieved {len(response.data)} bills (status={status})")
+                return response.data
+        except Exception as e:
+            logger.error(f"Error fetching bills: {e}")
+            raise
+        
+        # Legacy PostgreSQL
+        if status:
+            query = "SELECT * FROM bills WHERE status = %s ORDER BY created_at DESC"
+            params = (status,)
+        else:
+            query = "SELECT * FROM bills ORDER BY created_at DESC"
+            params = ()
+        
+        if limit:
+            query += " LIMIT %s"
+            params = params + (limit,)
+        
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(query, params)
                 return [dict(row) for row in cur.fetchall()]
     
     @retry(max_attempts=3, delay=1, backoff=2, exceptions=(Exception,))

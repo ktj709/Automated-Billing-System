@@ -103,7 +103,7 @@ with tab2:
             "9️⃣ Create Stripe Payment Link",
             "🔟 Update DB with Payment Info",
             "1️⃣1️⃣ AI Notification Agent - Generate message",
-            "1️⃣2️⃣ Send WhatsApp Notification",
+            "1️⃣2️⃣ Send Discord Notification",
             "1️⃣3️⃣ Log Notification in DB"
         ]
         for step in steps:
@@ -124,6 +124,7 @@ with tab2:
         with col2:
             reading_date = st.date_input("Reading Date", value=datetime.now(), key="wf_date")
             customer_phone = st.text_input("Customer Phone", value="+1234567890", key="wf_phone")
+            discord_user_id = st.text_input("Discord User ID (optional - for direct mention)", value="", key="wf_discord_id", help="Right-click on yourself in Discord > Copy User ID")
             user_id = st.text_input("User ID (for Auth)", value="auth0|user123", key="wf_user_id")
             jwt_token = st.text_input("JWT Token (optional - for real Auth0 verification)", value="", type="password", key="wf_jwt_token")
         
@@ -139,12 +140,12 @@ with tab2:
                 # Import services
                 from services.ai_agent_service import AIAgentService
                 from services.payment_service import PaymentService
-                from services.whatsapp_service import WhatsAppService
+                from services.discord_service import DiscordService
                 from services.auth_service import AuthService
                 
                 ai_service = AIAgentService()
                 payment_service = PaymentService()
-                whatsapp_service = WhatsAppService()
+                discord_service = DiscordService()
                 auth_service = AuthService()
                 
                 # Step 1: Webhook (already received)
@@ -286,13 +287,23 @@ with tab2:
                 st.info(f"Message: {notification_message}")
                 progress_bar.progress(85)
                 
-                # Step 12: Send WhatsApp
-                st.info("📱 Step 12: Sending WhatsApp notification...")
-                whatsapp_result = whatsapp_service.send_notification(
-                    phone_number=customer_phone,
-                    message=notification_message
+                # Step 12: Send Discord Notification
+                st.info("💬 Step 12: Sending Discord notification...")
+                discord_result = discord_service.send_bill_notification(
+                    customer_id=customer_id,
+                    bill_id=str(bill_id),
+                    amount=bill_calculation['total_amount'],
+                    due_date=bill_data['billing_period_end'],
+                    payment_link=payment_link['url'],
+                    discord_user_id=discord_user_id if discord_user_id else None
                 )
-                st.success(f"✅ Step 12: WhatsApp sent - Message ID: {whatsapp_result['message_id']}")
+                if discord_result.get('success'):
+                    if discord_user_id:
+                        st.success(f"✅ Step 12: Discord notification sent with mention to user {discord_user_id}")
+                    else:
+                        st.success(f"✅ Step 12: Discord notification sent to channel")
+                else:
+                    st.warning(f"⚠️ Step 12: Discord notification failed: {discord_result.get('error', 'Unknown error')}")
                 progress_bar.progress(92)
                 
                 # Step 13: Log Notification
@@ -300,10 +311,9 @@ with tab2:
                 db.log_notification({
                     "bill_id": bill_id,
                     "customer_id": customer_id,
-                    "channel": "whatsapp",
+                    "channel": "discord",
                     "message": notification_message,
-                    "status": "sent",
-                    "whatsapp_message_id": whatsapp_result['message_id'],
+                    "status": "sent" if discord_result.get('success') else "failed",
                     "sent_at": datetime.now().isoformat()
                 })
                 st.success("✅ Step 13: Notification logged")
@@ -328,12 +338,94 @@ with tab2:
                 st.write(f"**Meter**: {meter_id}")
                 st.write(f"**Period**: {bill_data['billing_period_start']} to {bill_data['billing_period_end']}")
                 st.write(f"**Payment Link**: {payment_link['url']}")
-                st.write(f"**WhatsApp Sent**: {customer_phone}")
+                st.write(f"**Discord Notification**: Sent to billing channel")
+                
+                # Store bill info in session state for payment confirmation
+                st.session_state['last_bill_id'] = bill_id
+                st.session_state['last_bill_amount'] = bill_calculation['total_amount']
+                st.session_state['last_customer_id'] = customer_id
+                st.session_state['last_discord_user_id'] = discord_user_id
                 
             except Exception as e:
                 st.error(f"❌ Error in workflow: {str(e)}")
                 import traceback
                 st.code(traceback.format_exc())
+    
+    # Payment Confirmation Section (outside the form/submit block)
+    st.markdown("---")
+    st.markdown("### 💳 Payment Confirmation")
+    
+    if 'last_bill_id' in st.session_state and st.session_state.get('last_bill_id'):
+        bill_id = st.session_state['last_bill_id']
+        amount = st.session_state.get('last_bill_amount', 0)
+        customer_id = st.session_state.get('last_customer_id', '')
+        discord_user_id = st.session_state.get('last_discord_user_id', '')
+        
+        st.info(f"📄 Last created bill: **#{bill_id}** - Amount: **₹{amount:,.2f}**")
+        st.write("After completing payment via Stripe, click below to send confirmation notification:")
+        
+        if st.button("✅ I've Paid This Bill", type="primary", key="confirm_payment_main"):
+            try:
+                with st.spinner("Processing payment confirmation..."):
+                    from services.ai_agent_service import AIAgentService
+                    from services.discord_service import DiscordService
+                    
+                    ai_service = AIAgentService()
+                    discord_service = DiscordService()
+                    
+                    # Mark bill as paid
+                    db.update_bill_status(
+                        bill_id=bill_id,
+                        status='paid'
+                    )
+                    st.success("✓ Bill marked as paid")
+                    
+                    # Generate AI thank you message
+                    try:
+                        thank_you_message = ai_service.generate_payment_confirmation_message(
+                            customer_id=customer_id,
+                            bill_id=bill_id,
+                            amount=amount
+                        )
+                        st.success("✓ Thank you message generated")
+                    except Exception as e:
+                        st.warning(f"⚠️ Using default message")
+                        thank_you_message = f"Thank you for your payment of ₹{amount:.2f}! Your bill #{bill_id} has been successfully paid."
+                    
+                    # Send Discord payment confirmation
+                    discord_confirm = discord_service.send_payment_confirmation(
+                        customer_id=customer_id,
+                        bill_id=str(bill_id),
+                        amount=amount,
+                        payment_date=datetime.now().isoformat(),
+                        discord_user_id=discord_user_id if discord_user_id else None
+                    )
+                    
+                    # Log confirmation notification
+                    db.log_notification({
+                        "bill_id": bill_id,
+                        "customer_id": customer_id,
+                        "channel": "discord",
+                        "message": thank_you_message,
+                        "status": "sent" if discord_confirm.get('success') else "failed",
+                        "sent_at": datetime.now().isoformat()
+                    })
+                    
+                    if discord_confirm.get('success'):
+                        st.success("🎉 Payment confirmed! Discord notification sent.")
+                        st.balloons()
+                        # Clear the session state
+                        st.session_state['last_bill_id'] = None
+                    else:
+                        st.error(f"⚠️ Bill marked as paid, but Discord notification failed: {discord_confirm.get('error', 'Unknown')}")
+            
+            except Exception as e:
+                st.error(f"❌ Error processing payment: {str(e)}")
+                import traceback
+                st.code(traceback.format_exc())
+    else:
+        st.info("Create a bill using the workflow above first, then you can confirm payment here.")
+
 
 # Tab 3: Auth0 Testing
 with tab3:
@@ -970,19 +1062,32 @@ with tab5:
     
     jobs = scheduler.get_job_status()
     
+    # Job descriptions
+    job_descriptions = {
+        'monthly_bill_generation': '📊 Generates monthly electricity bills for all active meters on the 1st of each month',
+        'payment_reminders': '🔔 Sends payment reminders for bills due in the next 3 days (runs daily at 10 AM)',
+        'overdue_bills': '⚠️ Marks bills as overdue and sends notices (runs daily at 11 AM)',
+        'meter_reading_collection': '📡 Collects meter readings from smart meters (runs weekly on Sunday at 8 AM)'
+    }
+    
     for job in jobs:
-        with st.expander(f"**{job['name']}** - Next run: {job['next_run']}", expanded=True):
-            col1, col2, col3 = st.columns([2, 2, 1])
+        # Get description
+        description = job_descriptions.get(job['id'], 'Scheduled automation task')
+        
+        with st.expander(f"**{job['name']}** - In {job['time_until']}", expanded=False):
+            # Description
+            st.info(f"ℹ️ {description}")
+            
+            col1, col2 = st.columns([3, 1])
             
             with col1:
-                st.write(f"**ID:** `{job['id']}`")
-                st.write(f"**Trigger:** {job['trigger']}")
+                st.write(f"**📅 Next Run:** {job['next_run']}")
+                st.write(f"**⏰ Time Until:** {job['time_until']}")
+                st.write(f"**🔄 Schedule:** {job['trigger']}")
             
             with col2:
-                st.write(f"**Next Run:** {job['next_run']}")
-            
-            with col3:
-                if st.button("▶️ Run Now", key=f"run_{job['id']}"):
+                st.write("")
+                if st.button("▶️ Run Now", key=f"run_{job['id']}", use_container_width=True):
                     with st.spinner(f"Running {job['name']}..."):
                         result = scheduler.run_job_now(job['id'])
                         
@@ -1090,6 +1195,66 @@ with tab6:
                         if bill.get('payment_link'):
                             st.write(f"**Payment Link**: {bill.get('payment_link')[:50]}...")
                             st.link_button("💳 Open Payment Link", bill.get('payment_link'))
+                    
+                    # Payment Confirmation for pending bills
+                    if status == 'pending':
+                        st.markdown("---")
+                        st.markdown("### 💳 Confirm Payment")
+                        st.info("After completing payment, click below to send confirmation notification")
+                        
+                        discord_user_id_confirm = st.text_input("Discord User ID (optional)", value="", key=f"discord_confirm_{bill_id_input}")
+                        
+                        if st.button("✅ I've Paid This Bill", type="primary", key=f"mark_paid_{bill_id_input}"):
+                            try:
+                                with st.spinner("Processing payment confirmation..."):
+                                    # Mark bill as paid
+                                    db.update_bill_status(
+                                        bill_id=bill_id_input,
+                                        status='paid'
+                                    )
+                                    
+                                    # Generate AI thank you message
+                                    try:
+                                        thank_you_message = ai_service.generate_payment_confirmation_message(
+                                            customer_id=bill.get('customer_id'),
+                                            bill_id=bill_id_input,
+                                            amount=bill.get('amount', 0)
+                                        )
+                                    except Exception as e:
+                                        st.write(f"⚠️ Using default message (AI unavailable)")
+                                        thank_you_message = f"Thank you for your payment of ₹{bill.get('amount', 0):.2f}! Your bill #{bill_id_input} has been successfully paid."
+                                    
+                                    # Send Discord payment confirmation
+                                    discord_confirm = discord_service.send_payment_confirmation(
+                                        customer_id=bill.get('customer_id'),
+                                        bill_id=str(bill_id_input),
+                                        amount=bill.get('amount', 0),
+                                        payment_date=datetime.now().isoformat(),
+                                        discord_user_id=discord_user_id_confirm if discord_user_id_confirm else None
+                                    )
+                                    
+                                    # Log confirmation notification
+                                    db.log_notification({
+                                        "bill_id": bill_id_input,
+                                        "customer_id": bill.get('customer_id'),
+                                        "channel": "discord",
+                                        "message": thank_you_message,
+                                        "status": "sent" if discord_confirm.get('success') else "failed",
+                                        "sent_at": datetime.now().isoformat()
+                                    })
+                                    
+                                    if discord_confirm.get('success'):
+                                        st.success("🎉 Payment confirmed! Discord notification sent.")
+                                        st.balloons()
+                                        st.rerun()
+                                    else:
+                                        st.warning(f"⚠️ Bill marked as paid, but Discord notification failed: {discord_confirm.get('error', 'Unknown')}")
+                                        st.rerun()
+                            
+                            except Exception as e:
+                                st.error(f"❌ Error processing payment: {str(e)}")
+                                import traceback
+                                st.code(traceback.format_exc())
                 
                 else:
                     st.error(f"❌ Bill #{bill_id_input} not found")
@@ -1484,9 +1649,9 @@ with tab9:
                     with col1:
                         st.metric("Total Bills", report['total_bills'])
                     with col2:
-                        st.metric("Total Revenue", f"${report['total_revenue']:,.2f}")
+                        st.metric("Total Revenue", f"₹{report['total_revenue']:,.2f}")
                     with col3:
-                        st.metric("Collected", f"${report['collected_revenue']:,.2f}")
+                        st.metric("Collected", f"₹{report['collected_revenue']:,.2f}")
                     with col4:
                         st.metric("Success Rate", f"{report['payment_success_rate']}%")
                     
@@ -1495,11 +1660,11 @@ with tab9:
                     # Additional metrics
                     col1, col2, col3 = st.columns(3)
                     with col1:
-                        st.metric("Pending Revenue", f"${report['pending_revenue']:,.2f}")
+                        st.metric("Pending Revenue", f"₹{report['pending_revenue']:,.2f}")
                     with col2:
-                        st.metric("Average Bill", f"${report['average_bill']:,.2f}")
+                        st.metric("Average Bill", f"₹{report['average_bill']:,.2f}")
                     with col3:
-                        st.metric("Max Bill", f"${report['max_bill']:,.2f}")
+                        st.metric("Max Bill", f"₹{report['max_bill']:,.2f}")
     
     elif report_type == "Consumption Analytics":
         st.subheader("⚡ Consumption Analytics")

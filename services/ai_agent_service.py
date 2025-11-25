@@ -153,3 +153,55 @@ Respond with JSON: {{"valid": true/false, "reason": "explanation", "confidence":
         )
         
         return message
+    
+    def generate_payment_confirmation_message(
+        self,
+        customer_id: str,
+        bill_id: int,
+        amount: float
+    ) -> str:
+        """
+        Generate a thank you message for successful payment
+        Uses AI if enabled, otherwise returns a friendly default message
+        """
+        # If AI is enabled, generate personalized message
+        if self.enabled:
+            try:
+                prompt = f"""Generate a warm, friendly thank you message for a customer who just paid their electricity bill.
+
+Customer ID: {customer_id}
+Bill ID: {bill_id}
+Amount Paid: ₹{amount:.2f}
+
+Requirements:
+- Keep it brief (2-3 sentences max)
+- Express gratitude
+- Confirm payment received
+- Professional but friendly tone
+- Include the bill ID and amount
+
+Do not include greetings like "Dear Customer" or signatures."""
+
+                response = self.client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": "You are a friendly customer service agent for an electricity billing company."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_tokens=150
+                )
+                
+                return response.choices[0].message.content.strip()
+            
+            except Exception as e:
+                # Fallback to default message if AI fails
+                pass
+        
+        # Default message if AI disabled or fails
+        return (
+            f"Thank you for your payment of ₹{amount:.2f}! "
+            f"Your bill #{bill_id} has been successfully paid. "
+            f"We appreciate your prompt payment."
+        )
+

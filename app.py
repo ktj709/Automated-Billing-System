@@ -285,6 +285,15 @@ def stripe_webhook():
     """
     Stripe webhook endpoint for payment events
     
+    Workflow:
+    1. Verify webhook signature
+    2. Check if payment successful
+    3. Mark bill as paid in database
+    4. Save payment details to payment_events table
+    5. Generate AI thank you message
+    6. Send Discord notification
+    7. Log notification in database
+    
     Setup in Stripe Dashboard:
     1. Go to Developers → Webhooks
     2. Add endpoint: https://your-domain.com/webhook/stripe
@@ -295,7 +304,7 @@ def stripe_webhook():
         payload = request.data
         sig_header = request.headers.get('Stripe-Signature')
         
-        # For testing without webhook secret
+        # Step 1: Verify webhook signature
         if not Config.STRIPE_WEBHOOK_SECRET or Config.STRIPE_WEBHOOK_SECRET == "whsec_your_webhook_secret":
             # Parse event without verification (TESTING ONLY)
             logger.warning("Processing Stripe webhook without signature verification (TEST MODE)")
@@ -307,7 +316,7 @@ def stripe_webhook():
                 event = stripe.Webhook.construct_event(
                     payload, sig_header, Config.STRIPE_WEBHOOK_SECRET
                 )
-                logger.info("Stripe webhook signature verified")
+                logger.info("✅ Stripe webhook signature verified")
             except stripe.error.SignatureVerificationError as e:
                 logger.error(f"Invalid Stripe webhook signature: {e}")
                 return jsonify({"error": "Invalid signature"}), 400
@@ -316,49 +325,113 @@ def stripe_webhook():
         event_data = event.get('data', {}).get('object', {})
         logger.info(f"Processing Stripe event: {event_type}")
         
-        # Handle checkout session completed
+        # Step 2: Handle checkout session completed
         if event_type == 'checkout.session.completed':
-            # Extract metadata
             metadata = event_data.get('metadata', {})
             bill_id = metadata.get('bill_id')
+            customer_id = metadata.get('customer_id')
             payment_status = event_data.get('payment_status')
+            amount_total = event_data.get('amount_total', 0) / 100  # Convert from paise to rupees
             
+            # Step 3: Check if payment successful
             if bill_id and payment_status == 'paid':
-                logger.info(f"Payment completed for bill {bill_id}")
-                # Update bill status
+                logger.info(f"💰 Payment completed for bill {bill_id}")
+                
+                # Step 4: Mark bill as paid
                 db_service.update_bill_status(
                     bill_id=int(bill_id),
                     status='paid',
                     payment_date=datetime.now().isoformat()
                 )
+                logger.info(f"✅ Bill {bill_id} marked as paid")
                 
-                # Log payment event
+                # Step 5: Save payment details
                 db_service.log_payment_event({
                     'bill_id': int(bill_id),
                     'event_type': event_type,
                     'payment_link_id': metadata.get('payment_link_id'),
                     'stripe_event_id': event.get('id'),
+                    'amount': amount_total,
+                    'currency': event_data.get('currency', 'inr'),
+                    'status': 'succeeded',
+                    'customer_id': customer_id,
                     'event_data': json.dumps(event_data),
                     'received_at': datetime.now().isoformat()
                 })
+                logger.info(f"💾 Payment details saved for bill {bill_id}")
                 
-                print(f"✅ Bill {bill_id} marked as paid")
+                # Step 6: Generate AI thank you message
+                try:
+                    ai_message = ai_service.generate_payment_confirmation_message(
+                        customer_id=customer_id,
+                        bill_id=bill_id,
+                        amount=amount_total
+                    )
+                except Exception as e:
+                    logger.warning(f"AI message generation failed, using default: {e}")
+                    ai_message = f"Thank you for your payment of ₹{amount_total:.2f}! Your bill #{bill_id} has been paid successfully."
+                
+                # Step 7: Send Discord notification
+                from services.discord_service import DiscordService
+                discord_service = DiscordService()
+                
+                discord_result = discord_service.send_payment_confirmation(
+                    customer_id=customer_id,
+                    bill_id=str(bill_id),
+                    amount=amount_total,
+                    payment_date=datetime.now().isoformat()
+                )
+                
+                if discord_result.get('success'):
+                    logger.info(f"✅ Discord payment confirmation sent for bill {bill_id}")
+                else:
+                    logger.error(f"❌ Discord notification failed for bill {bill_id}")
+                
+                # Step 8: Log notification
+                db_service.log_notification({
+                    'bill_id': int(bill_id),
+                    'customer_id': customer_id,
+                    'channel': 'discord',
+                    'message': ai_message,
+                    'status': 'sent' if discord_result.get('success') else 'failed',
+                    'sent_at': datetime.now().isoformat()
+                })
+                logger.info(f"📝 Notification logged for bill {bill_id}")
+                
+                logger.info(f"🎉 Payment workflow completed successfully for bill {bill_id}")
         
-        # Handle payment intent succeeded
+        # Handle payment intent succeeded (alternative event)
         elif event_type == 'payment_intent.succeeded':
             payment_intent = event_data
             metadata = payment_intent.get('metadata', {})
             bill_id = metadata.get('bill_id')
+            customer_id = metadata.get('customer_id')
+            amount = payment_intent.get('amount', 0) / 100
             
             if bill_id:
                 logger.info(f"Payment intent succeeded for bill {bill_id}")
+                
+                # Mark bill as paid
                 db_service.update_bill_status(
                     bill_id=int(bill_id),
                     status='paid',
                     payment_date=datetime.now().isoformat()
                 )
                 
-                logger.info(f"Bill {bill_id} payment confirmed")
+                # Save payment details
+                db_service.log_payment_event({
+                    'bill_id': int(bill_id),
+                    'event_type': event_type,
+                    'stripe_event_id': event.get('id'),
+                    'amount': amount,
+                    'currency': payment_intent.get('currency', 'inr'),
+                    'status': 'succeeded',
+                    'customer_id': customer_id,
+                    'event_data': json.dumps(event_data),
+                    'received_at': datetime.now().isoformat()
+                })
+                
+                logger.info(f"✅ Bill {bill_id} payment confirmed via payment_intent")
         
         return jsonify({"received": True, "event": event_type}), 200
 
@@ -417,11 +490,6 @@ def run_scheduled_job(job_id):
 
 if __name__ == '__main__':
     logger.info("Starting Flask application...")
-    app.run(
-        host=Config.APP_HOST,
-        port=Config.APP_PORT,
-        debug=Config.DEBUG
-    )
     app.run(
         host='0.0.0.0',
         port=5000,

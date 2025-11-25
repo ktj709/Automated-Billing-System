@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 from typing import List, Dict
 import logging
 
-from services import DatabaseService, TariffRules, AIAgentService, PaymentService, WhatsAppService
+from services import DatabaseService, TariffRules, AIAgentService, PaymentService
+from services.discord_service import DiscordService
 from utils.logger import setup_logger, LogContext
 
 logger = setup_logger('billing_scheduler')
@@ -22,7 +23,7 @@ class BillingScheduler:
         self.db = DatabaseService()
         self.ai_service = AIAgentService()
         self.payment_service = PaymentService()
-        self.whatsapp_service = WhatsAppService()
+        self.discord_service = DiscordService()
         self.tariff_calculator = TariffRules()
         
         logger.info("Billing scheduler initialized")
@@ -164,28 +165,29 @@ Pay now: {bill.get('payment_link', 'N/A')}
 Avoid late fees - pay today!"""
                         
                         # Send reminder
-                        customer_phone = self._get_customer_phone(bill['customer_id'])
-                        if customer_phone:
-                            result = self.whatsapp_service.send_message(customer_phone, message)
+                        result = self.discord_service.send_payment_reminder(
+                            customer_id=bill['customer_id'],
+                            bill_id=str(bill['id']),
+                            amount=bill['amount'],
+                            due_date=bill['billing_period_end'],
+                            days_until_due=days_until_due,
+                            payment_link=bill.get('payment_link', '')
+                        )
+                        
+                        if result.get('success'):
+                            reminders_sent += 1
                             
-                            if result.get('success'):
-                                reminders_sent += 1
-                                
-                                # Log notification
-                                self.db.log_notification({
-                                    'bill_id': bill['id'],
-                                    'customer_id': bill['customer_id'],
-                                    'channel': 'whatsapp',
-                                    'message': message,
-                                    'status': 'sent',
-                                    'whatsapp_message_id': result.get('message_id'),
-                                    'sent_at': datetime.now().isoformat()
-                                })
-                            else:
-                                reminders_failed += 1
+                            # Log notification
+                            self.db.log_notification({
+                                'bill_id': bill['id'],
+                                'customer_id': bill['customer_id'],
+                                'channel': 'discord',
+                                'message': f"Payment reminder for bill {bill['id']}",
+                                'status': 'sent',
+                                'sent_at': datetime.now().isoformat()
+                            })
                         else:
                             reminders_failed += 1
-                            logger.warning(f"No phone number for customer {bill['customer_id']}")
                         
                     except Exception as e:
                         reminders_failed += 1
@@ -229,21 +231,14 @@ Avoid late fees - pay today!"""
                         bills_marked += 1
                         
                         # Send overdue notification
-                        customer_phone = self._get_customer_phone(bill['customer_id'])
-                        if customer_phone:
-                            message = f"""🚨 OVERDUE BILL NOTICE
-
-Your electricity bill is now OVERDUE.
-
-Bill Amount: ₹{bill['amount']:.2f}
-Due Date: {bill['billing_period_end']} (PAST DUE)
-Late Fee: May apply
-
-Pay immediately: {bill.get('payment_link', 'N/A')}
-
-Contact customer service for assistance."""
-                            
-                            self.whatsapp_service.send_message(customer_phone, message)
+                        days_overdue = self._calculate_days_overdue(bill['billing_period_end'])
+                        result = self.discord_service.send_overdue_notice(
+                            customer_id=bill['customer_id'],
+                            bill_id=str(bill['id']),
+                            amount=bill['amount'],
+                            days_overdue=days_overdue,
+                            late_fee=0.0  # Calculate late fee if needed
+                        )
                         
                     except Exception as e:
                         bills_failed += 1
@@ -385,15 +380,13 @@ Contact customer service for assistance."""
             )
             
             # Send notification
-            if meter.get('customer_phone'):
-                message = self.ai_service.generate_notification_message(
-                    customer_id=meter['customer_id'],
-                    bill_amount=bill_calculation['total_amount'],
-                    consumption_kwh=bill_calculation['consumption_kwh'],
-                    payment_link=payment_link['url']
-                )
-                
-                self.whatsapp_service.send_message(meter['customer_phone'], message)
+            result = self.discord_service.send_bill_notification(
+                customer_id=meter['customer_id'],
+                bill_id=str(bill['id']),
+                amount=bill_calculation['total_amount'],
+                due_date=bill_data['billing_period_end'],
+                payment_link=payment_link['url']
+            )
             
             return {
                 "id": bill['id'],
@@ -407,24 +400,85 @@ Contact customer service for assistance."""
     
     def _get_upcoming_due_bills(self, days: int = 3) -> List[Dict]:
         """Get bills due in next N days"""
-        # In production, this would query the database with a date filter
-        # For now, return empty list (no upcoming bills in test data)
         try:
-            # This would be a SQL query like:
-            # SELECT * FROM bills 
-            # WHERE status = 'pending' 
-            # AND billing_period_end BETWEEN NOW() AND NOW() + INTERVAL days DAY
-            return []
+            from datetime import date, timedelta
+            
+            # Get all pending bills
+            all_bills = self.db.get_all_bills(status='pending')
+            
+            if not all_bills:
+                logger.info("No pending bills found")
+                return []
+            
+            # Filter bills due in next N days
+            upcoming_bills = []
+            today = date.today()
+            future_date = today + timedelta(days=days)
+            
+            for bill in all_bills:
+                try:
+                    # Parse the billing_period_end date
+                    due_date_str = bill.get('billing_period_end', '')
+                    if due_date_str:
+                        # Handle both date and datetime formats
+                        if 'T' in due_date_str:
+                            due_date = datetime.fromisoformat(due_date_str.replace('Z', '+00:00')).date()
+                        else:
+                            due_date = datetime.strptime(due_date_str[:10], '%Y-%m-%d').date()
+                        
+                        # Check if bill is due within the next N days
+                        if today <= due_date <= future_date:
+                            upcoming_bills.append(bill)
+                            logger.debug(f"Bill {bill['id']} due on {due_date} (in {(due_date - today).days} days)")
+                except Exception as e:
+                    logger.error(f"Error parsing date for bill {bill.get('id')}: {e}")
+                    continue
+            
+            logger.info(f"Found {len(upcoming_bills)} bills due in next {days} days")
+            return upcoming_bills
+            
         except Exception as e:
             logger.error(f"Error fetching upcoming bills: {e}")
             return []
     
     def _get_overdue_bills(self) -> List[Dict]:
         """Get bills past due date and still pending"""
-        # In production, this would query the database
-        # SELECT * FROM bills WHERE status = 'pending' AND billing_period_end < NOW()
         try:
-            return []
+            from datetime import date
+            
+            # Get all pending bills
+            all_bills = self.db.get_all_bills(status='pending')
+            
+            if not all_bills:
+                logger.info("No pending bills found")
+                return []
+            
+            # Filter overdue bills
+            overdue_bills = []
+            today = date.today()
+            
+            for bill in all_bills:
+                try:
+                    # Parse the billing_period_end date
+                    due_date_str = bill.get('billing_period_end', '')
+                    if due_date_str:
+                        # Handle both date and datetime formats
+                        if 'T' in due_date_str:
+                            due_date = datetime.fromisoformat(due_date_str.replace('Z', '+00:00')).date()
+                        else:
+                            due_date = datetime.strptime(due_date_str[:10], '%Y-%m-%d').date()
+                        
+                        # Check if bill is overdue
+                        if due_date < today:
+                            overdue_bills.append(bill)
+                            logger.debug(f"Bill {bill['id']} overdue by {(today - due_date).days} days")
+                except Exception as e:
+                    logger.error(f"Error parsing date for bill {bill.get('id')}: {e}")
+                    continue
+            
+            logger.info(f"Found {len(overdue_bills)} overdue bills")
+            return overdue_bills
+            
         except Exception as e:
             logger.error(f"Error fetching overdue bills: {e}")
             return []
@@ -448,6 +502,17 @@ Contact customer service for assistance."""
             logger.error(f"Error calculating days until due: {e}")
             return 0
     
+    def _calculate_days_overdue(self, due_date: str) -> int:
+        """Calculate days bill is overdue"""
+        try:
+            due = datetime.fromisoformat(due_date.replace('Z', '+00:00'))
+            now = datetime.now()
+            delta = now - due
+            return max(0, delta.days)
+        except Exception as e:
+            logger.error(f"Error calculating days overdue: {e}")
+            return 0
+    
     def _simulate_meter_reading(self, meter: Dict) -> Dict:
         """Simulate collecting a meter reading (in production, call real API)"""
         # In production, this would call the smart meter API
@@ -468,16 +533,40 @@ Contact customer service for assistance."""
     
     def get_job_status(self) -> List[Dict]:
         """Get status of all scheduled jobs"""
+        from datetime import datetime
         jobs = self.scheduler.get_jobs()
-        return [
-            {
+        result = []
+        for job in jobs:
+            # Format next run time nicely
+            if job.next_run_time:
+                next_run_dt = job.next_run_time
+                # Calculate time until next run
+                now = datetime.now(next_run_dt.tzinfo)
+                delta = next_run_dt - now
+                
+                if delta.days > 0:
+                    time_until = f"{delta.days} day{'s' if delta.days != 1 else ''}, {delta.seconds // 3600} hours"
+                elif delta.seconds >= 3600:
+                    time_until = f"{delta.seconds // 3600} hour{'s' if (delta.seconds // 3600) != 1 else ''}"
+                elif delta.seconds >= 60:
+                    time_until = f"{delta.seconds // 60} minute{'s' if (delta.seconds // 60) != 1 else ''}"
+                else:
+                    time_until = "Less than 1 minute"
+                
+                next_run_formatted = next_run_dt.strftime("%B %d, %Y at %I:%M %p")
+            else:
+                next_run_formatted = "Not scheduled"
+                time_until = "N/A"
+            
+            result.append({
                 "id": job.id,
                 "name": job.name,
-                "next_run": job.next_run_time.isoformat() if job.next_run_time else None,
+                "next_run": next_run_formatted,
+                "next_run_raw": job.next_run_time.isoformat() if job.next_run_time else None,
+                "time_until": time_until,
                 "trigger": str(job.trigger)
-            }
-            for job in jobs
-        ]
+            })
+        return result
 
 
 # Global scheduler instance
