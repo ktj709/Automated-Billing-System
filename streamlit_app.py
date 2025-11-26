@@ -400,6 +400,37 @@ else:  # admin role
             st.cache_resource.clear()
             st.rerun()
 
+    # Admin Tabs
+    admin_tab1, admin_tab2 = st.tabs(["📊 Overview", "📄 View Bills"])
+
+    # Overview Tab (existing content)
+    with admin_tab1:
+        st.header("📊 System Overview")
+        # ...existing admin overview/dashboard code...
+
+    # View Bills Tab
+    with admin_tab2:
+        st.header("📄 All Generated Bills")
+        try:
+            bills = db.get_all_bills()
+            if bills:
+                import pandas as pd
+                df = pd.DataFrame(bills)
+                df['created_at'] = pd.to_datetime(df['created_at'])
+                df = df.sort_values('created_at', ascending=False)
+                st.dataframe(df, width='stretch')
+                csv = df.to_csv(index=False)
+                st.download_button(
+                    label="📥 Download Bills CSV",
+                    data=csv,
+                    file_name=f"all_bills_{datetime.now().strftime('%Y%m%d')}.csv",
+                    mime="text/csv"
+                )
+            else:
+                st.info("No bills found.")
+        except Exception as e:
+            st.error(f"Error loading bills: {str(e)}")
+
     # Admin Main Content Tabs
     tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
         "📊 Dashboard", 
