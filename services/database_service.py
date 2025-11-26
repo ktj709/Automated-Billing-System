@@ -18,6 +18,32 @@ except ImportError:
 
 class DatabaseService:
     """PostgreSQL database service for billing operations"""
+
+    def insert_meter_reading(self, reading_data: Dict) -> Dict:
+        """Insert a new meter reading (field engineer submission)"""
+        logger.debug(f"Inserting meter reading for meter {reading_data.get('meter_id')}")
+        try:
+            if self.use_supabase:
+                response = self.supabase.table('meter_readings').insert(reading_data).execute()
+                result = response.data[0] if response.data else {}
+                logger.info(f"Inserted reading ID {result.get('id')} for meter {reading_data.get('meter_id')}")
+                return result
+        except Exception as e:
+            logger.error(f"Error inserting meter reading: {e}")
+            raise
+        query = """
+            INSERT INTO meter_readings (
+                meter_id, engineer_id, reading_value, unit, reading_date, submitted_at, status
+            ) VALUES (
+                %(meter_id)s, %(engineer_id)s, %(reading_value)s, %(unit)s, %(reading_date)s, %(submitted_at)s, %(status)s
+            ) RETURNING *
+        """
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(query, reading_data)
+                result = cur.fetchone()
+                conn.commit()
+                return dict(result)
     
     def __init__(self):
         # Try Supabase REST API first, fallback to PostgreSQL
