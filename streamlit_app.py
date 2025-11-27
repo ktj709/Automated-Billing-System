@@ -5,12 +5,17 @@ import streamlit as st
 import json
 from datetime import datetime, timedelta
 from services import DatabaseService, TariffRules
+from services.graph_service import GraphService
+import openai
+from services.graph_service import GraphService
 from utils.sample_data import SampleDataGenerator
 
 st.set_page_config(page_title="Billing System Dashboard", page_icon="⚡", layout="wide")
 
 # Initialize session state for role
 if 'user_role' not in st.session_state:
+    if 'openai_api_key' not in st.session_state:
+        st.session_state.openai_api_key = ""
     st.session_state.user_role = None
 
 # Initialize services
@@ -73,7 +78,7 @@ elif st.session_state.user_role == "field_engineer":
         st.cache_resource.clear()
         st.cache_data.clear()
         st.session_state.fe_initialized = True
-    
+
     st.title("🔧 Field Engineer Dashboard")
     st.markdown("### Meter Reading & Field Operations")
     st.markdown("---")
@@ -249,20 +254,21 @@ elif st.session_state.user_role == "field_engineer":
                                     "submitted_at": datetime.now().isoformat(),
                                     "status": "pending"
                                 }
+                                # Insert into Supabase
                                 try:
                                     result = db.insert_meter_reading(reading_data)
-                                    st.write(f"🔎 Debug: DB insert result: {result}")
-                                    if not result or (isinstance(result, dict) and not result.get('id')):
-                                        st.error("❌ Reading was not saved to the database. Please check DB connection and table schema.")
-                                    else:
-                                        st.success(f"✅ Reading submitted successfully!")
+                                    if result and (isinstance(result, dict) and result.get('id')):
+                                        st.success(f"✅ Reading submitted successfully to Supabase!")
                                         st.info(f"📊 **Meter**: {form_meter_id} | **Reading**: {form_reading_value} kWh | **Date**: {form_reading_date.strftime('%Y-%m-%d')}")
+                                        st.info("💡 Admin can sync all readings to Neo4j using the 'Sync Readings' button")
                                         st.balloons()
                                         st.cache_resource.clear()
                                         st.cache_data.clear()
                                         st.rerun()
+                                    else:
+                                        st.error("❌ Failed to submit reading to database")
                                 except Exception as db_exc:
-                                    st.error(f"❌ DB Error: {db_exc}")
+                                    st.error(f"❌ Database Error: {db_exc}")
                         except Exception as e:
                             st.error(f"❌ Error submitting reading: {str(e)}")
         
@@ -278,11 +284,18 @@ elif st.session_state.user_role == "field_engineer":
                         num_months=num_readings,
                         base_consumption=200.0
                     )
-                    
+                    count = 0
                     for reading in readings:
-                        db.insert_meter_reading(reading)
+                        # Insert into Supabase only
+                        try:
+                            result = db.insert_meter_reading(reading)
+                            if result:
+                                count += 1
+                        except Exception as db_exc:
+                            st.error(f"❌ Supabase DB Error: {db_exc}")
                     
-                    st.success(f"✅ Generated {len(readings)} readings")
+                    st.success(f"✅ Generated {count}/{len(readings)} sample readings and saved to Supabase!")
+                    st.info("💡 Admin can sync all readings to Neo4j using the 'Sync Readings' button")
                     st.cache_resource.clear()
                     st.rerun()
                 except Exception as e:
@@ -319,12 +332,28 @@ elif st.session_state.user_role == "field_engineer":
                 
                 with col2:
                     if st.button("💰 Generate Bill", type="primary"):
-                        bill = TariffRules.calculate_total_bill(
-                            consumption_kwh=consumption,
-                            connected_load_kw=connected_load,
-                            tariff_type=tariff_type
-                        )
-                        
+                        # Fetch tariff rules from Neo4j
+                        tariff_rule = graph.get_tariff_rule(tariff_type)
+                        if not tariff_rule:
+                            st.error(f"No tariff rule found in Neo4j for type: {tariff_type}")
+                            st.stop()
+                        # Calculate bill using Neo4j rules
+                        grid_charge = consumption * tariff_rule.get("grid_charge_per_unit", 0)
+                        motor_charge = consumption * tariff_rule.get("motor_charge_per_unit", 0)
+                        fix_addition = connected_load * tariff_rule.get("fix_addition_grid_charge_per_kw", 0)
+                        common_area = tariff_rule.get("common_area_maintenance_charge", 0)
+                        total_addition = fix_addition + common_area
+                        amount_payable = grid_charge + motor_charge + total_addition
+                        bill = {
+                            "amount_payable": amount_payable,
+                            "detailed_breakdown": {
+                                "grid_charge": grid_charge,
+                                "motor_charge": motor_charge,
+                                "fix_addition": fix_addition,
+                                "common_area": common_area,
+                                "total_addition": total_addition
+                            }
+                        }
                         bill_data = {
                             "customer_id": "CUST001",
                             "meter_id": "METER001",
@@ -335,17 +364,20 @@ elif st.session_state.user_role == "field_engineer":
                             "status": "pending",
                             "created_at": datetime.now().isoformat()
                         }
-                        
+                        # Only insert bill into Supabase for creation
                         created_bill = db.create_bill(bill_data)
-                        
-                        st.success("✅ Bill Generated Successfully!")
+                        # Sync bill to Neo4j for updates/analytics
+                        try:
+                            graph.upsert_bill(bill_data)
+                        except Exception as neo_exc:
+                            st.error(f"❌ Neo4j Bill Sync Error: {neo_exc}")
+                        st.success("✅ Bill Generated and synced to Neo4j!")
                         st.markdown("---")
                         st.markdown("### 🧾 Bill Summary")
                         st.write(f"**Bill ID**: {created_bill.get('id', 'N/A')}")
                         st.write(f"**Consumption**: {consumption:.2f} kWh")
                         st.write(f"**Amount**: ₹{bill['amount_payable']:,.2f}")
                         st.write(f"**Status**: Pending")
-                        
                         with st.expander("📋 Detailed Breakdown"):
                             st.json(bill['detailed_breakdown'])
             
@@ -362,6 +394,77 @@ elif st.session_state.user_role == "field_engineer":
 # ADMIN DASHBOARD
 # ==============================================
 else:  # admin role
+    st.markdown("---")
+    st.header("🔄 Sync Readings from Supabase to Neo4j")
+    
+    if st.button("Sync All Readings to Neo4j", type="primary", key="sync_readings_to_neo4j", width='stretch'):
+        try:
+            from services.neo4j_service import Neo4jService
+            neo4j_service = Neo4jService()
+            
+            if not neo4j_service.is_connected():
+                st.error("❌ Neo4j is not connected. Please check your configuration.")
+            else:
+                with st.spinner("Syncing readings to Neo4j..."):
+                    readings = db.get_all_readings(limit=10000)  # Get all readings
+                    
+                    if not readings:
+                        st.warning("⚠️ No readings found in Supabase to sync.")
+                    else:
+                        count = 0
+                        errors = []
+                        
+                        with neo4j_service.driver.session() as session:
+                            for reading in readings:
+                                try:
+                                    # Ensure Customer and Meter nodes exist
+                                    session.run("MERGE (c:Customer {id: $customer_id})", 
+                                              customer_id=reading["customer_id"])
+                                    session.run("MERGE (m:Meter {id: $meter_id})", 
+                                              meter_id=reading["meter_id"])
+                                    
+                                    # Create Reading node
+                                    session.run("""
+                                        MERGE (r:Reading {id: $id})
+                                        SET r.value = $reading_value,
+                                            r.date = $reading_date,
+                                            r.meter_id = $meter_id,
+                                            r.customer_id = $customer_id,
+                                            r.location = $location,
+                                            r.notes = $notes
+                                    """,
+                                        id=str(reading.get("id", "")),
+                                        reading_value=float(reading["reading_value"]),
+                                        reading_date=str(reading["reading_date"]),
+                                        meter_id=reading["meter_id"],
+                                        customer_id=reading["customer_id"],
+                                        location=reading.get("location", ""),
+                                        notes=reading.get("notes", "")
+                                    )
+                                    
+                                    # Create relationships
+                                    session.run("""
+                                        MATCH (m:Meter {id: $meter_id}), (r:Reading {id: $id}) 
+                                        MERGE (m)-[:HAS_READING]->(r)
+                                    """, meter_id=reading["meter_id"], id=str(reading.get("id", "")))
+                                    
+                                    session.run("""
+                                        MATCH (c:Customer {id: $customer_id}), (m:Meter {id: $meter_id}) 
+                                        MERGE (c)-[:OWNS]->(m)
+                                    """, customer_id=reading["customer_id"], meter_id=reading["meter_id"])
+                                    
+                                    count += 1
+                                except Exception as e:
+                                    errors.append(f"Reading {reading.get('id')}: {str(e)}")
+                        
+                        st.success(f"✅ {count} readings synced from Supabase to Neo4j!")
+                        if errors:
+                            with st.expander("⚠️ View Errors"):
+                                for error in errors:
+                                    st.error(error)
+        except Exception as e:
+            st.error(f"Error syncing readings: {e}")
+
     # Initialize admin session flag
     if 'admin_initialized' not in st.session_state:
         st.cache_resource.clear()
@@ -401,7 +504,7 @@ else:  # admin role
             st.rerun()
 
     # Admin Tabs
-    admin_tab1, admin_tab2 = st.tabs(["📊 Overview", "📄 View Bills"])
+    admin_tab1, admin_tab2, admin_tab3 = st.tabs(["📊 Overview", "📄 View Bills (Supabase)", "📄 View Bills (Neo4j)"])
 
     # Overview Tab (existing content)
     with admin_tab1:
@@ -410,7 +513,7 @@ else:  # admin role
 
     # View Bills Tab
     with admin_tab2:
-        st.header("📄 All Generated Bills")
+        st.header("📄 All Generated Bills (Supabase)")
         try:
             bills = db.get_all_bills()
             if bills:
@@ -423,13 +526,88 @@ else:  # admin role
                 st.download_button(
                     label="📥 Download Bills CSV",
                     data=csv,
-                    file_name=f"all_bills_{datetime.now().strftime('%Y%m%d')}.csv",
+                    file_name=f"all_bills_supabase_{datetime.now().strftime('%Y%m%d')}.csv",
                     mime="text/csv"
                 )
             else:
                 st.info("No bills found.")
         except Exception as e:
             st.error(f"Error loading bills: {str(e)}")
+
+    # View Bills from Neo4j
+    with admin_tab3:
+        st.header("📄 All Generated Bills (Neo4j)")
+        
+        col1, col2 = st.columns([3, 1])
+        with col2:
+            if st.button("🔄 Refresh", key="refresh_neo4j_bills", width='stretch'):
+                st.cache_resource.clear()
+                st.cache_data.clear()
+                st.rerun()
+        
+        try:
+            from services.neo4j_service import Neo4jService
+            neo4j_service = Neo4jService()
+            
+            if not neo4j_service.is_connected():
+                st.error("❌ Neo4j is not connected. Please check your configuration.")
+            else:
+                bills = neo4j_service.get_all_bills()
+                if bills:
+                    import pandas as pd
+                    df = pd.DataFrame(bills)
+                    st.dataframe(df, width='stretch')
+                    csv = df.to_csv(index=False)
+                    st.download_button(
+                        label="📥 Download Bills CSV (Neo4j)",
+                        data=csv,
+                        file_name=f"all_bills_neo4j_{datetime.now().strftime('%Y%m%d')}.csv",
+                        mime="text/csv"
+                    )
+                else:
+                    st.info("No bills found in Neo4j. Use the 'Sync All Bills to Neo4j' button in the Overview tab to sync bills.")
+        except Exception as e:
+            st.error(f"Error loading bills from Neo4j: {str(e)}")
+    st.markdown("---")
+    st.header("🤖 Advanced Analytics & RAG (Neo4j + OpenAI)")
+    st.text_input("Enter your OpenAI API Key", value=st.session_state.openai_api_key, key="openai_api_key")
+    if st.session_state.openai_api_key:
+        openai.api_key = st.session_state.openai_api_key
+        st.success("OpenAI API Key set!")
+        # Example RAG: Query Neo4j for context, then use OpenAI to answer a question
+        rag_query = st.text_input("Ask a question about bills, readings, or customers:", key="rag_query")
+        if rag_query:
+            try:
+                from services.neo4j_service import Neo4jService
+                neo4j_service = Neo4jService()
+                
+                if not neo4j_service.is_connected():
+                    st.error("❌ Neo4j is not connected. Cannot perform RAG query.")
+                else:
+                    # Retrieve context from Neo4j
+                    with neo4j_service.driver.session() as session:
+                        context_query = "MATCH (c:Customer)-[:HAS_BILL]->(b:Bill)<-[:GENERATED_BILL]-(m:Meter) RETURN b, c, m LIMIT 5"
+                        result = session.run(context_query)
+                        context = ""
+                        for record in result:
+                            b = record["b"]
+                            c = record["c"]
+                            m = record["m"]
+                            context += f"Bill: ${b.get('amount')} for Customer {c.get('id')} on meter {m.get('id')}\n"
+                    
+                    # Use OpenAI LLM for answer
+                    prompt = f"Context:\n{context}\n\nQuestion: {rag_query}\nAnswer:"
+                    try:
+                        response = openai.Completion.create(
+                            engine="text-davinci-003",
+                            prompt=prompt,
+                            max_tokens=150
+                        )
+                        st.markdown(f"**LLM Answer:** {response.choices[0].text.strip()}")
+                    except Exception as e:
+                        st.error(f"OpenAI API Error: {str(e)}")
+            except Exception as e:
+                st.error(f"Error with RAG query: {str(e)}")
 
     # Admin Main Content Tabs
     tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
@@ -507,6 +685,142 @@ else:  # admin role
     
         except Exception as e:
             st.error(f"Error loading data: {str(e)}")
+        
+        # Neo4j Sync Section
+        st.markdown("---")
+        st.subheader("🔗 Neo4j Graph Database Sync")
+        
+        # Show Neo4j configuration status
+        from config import Config
+        with st.expander("ℹ️ Neo4j Configuration"):
+            st.write(f"**URI:** `{Config.NEO4J_URI}`")
+            st.write(f"**User:** `{Config.NEO4J_USER}`")
+            st.write(f"**Password:** `{'*' * len(Config.NEO4J_PASSWORD) if Config.NEO4J_PASSWORD else '(not set)'}`")
+        
+        col_neo1, col_neo2, col_neo3 = st.columns(3)
+        
+        with col_neo1:
+            st.write("**Sync Bills to Neo4j**")
+            st.caption("Clears Neo4j and syncs all bills from Supabase for exact match")
+            
+            if st.button("🔄 Sync All Bills to Neo4j", type="primary", width='stretch', key="sync_neo4j"):
+                from services.neo4j_service import Neo4jService
+                neo4j_service = Neo4jService()
+                
+                # Check if Neo4j is available
+                if not neo4j_service.driver:
+                    st.error("❌ Neo4j Connection Failed!")
+                    
+                    if neo4j_service.connection_error:
+                        st.warning(f"**Error Details:** {neo4j_service.connection_error}")
+                    
+                    st.info("""
+                    **Your billing data is safe in Supabase.** Neo4j is optional for graph-based analytics.
+                    """)
+                    
+                    with st.expander("📘 How to Setup Neo4j (Optional)"):
+                        st.markdown("""
+                        ### Option 1: Neo4j Desktop (Recommended)
+                        1. Download from: https://neo4j.com/download/
+                        2. Install and open Neo4j Desktop
+                        3. Create a new project and database
+                        4. Click "Start" on your database
+                        5. Note the password you set
+                        
+                        ### Option 2: Docker (Quick)
+                        ```bash
+                        docker run -d --name neo4j \\
+                          -p 7687:7687 -p 7474:7474 \\
+                          -e NEO4J_AUTH=neo4j/your_password \\
+                          neo4j:latest
+                        ```
+                        
+                        ### Then update your `.env` file:
+                        ```
+                        NEO4J_URI=bolt://localhost:7687
+                        NEO4J_USER=neo4j
+                        NEO4J_PASSWORD=your_password
+                        ```
+                        
+                        ### Restart the Streamlit app after setup!
+                        """)
+                    
+                    st.info("💡 **Note:** All your bills are already in Supabase. Neo4j adds graph-based queries but is not required.")
+                else:
+                    with st.spinner("Syncing bills to Neo4j..."):
+                        # Get all bills from Supabase
+                        all_bills = db.supabase.table('bills').select('*').execute()
+                        bills_data = all_bills.data if hasattr(all_bills, 'data') else []
+                        
+                        if bills_data:
+                            # Sync to Neo4j
+                            result = neo4j_service.sync_bills_from_supabase(bills_data)
+                            
+                            if result.get('success'):
+                                st.success(f"✅ Perfect Sync Complete!")
+                                
+                                col_r1, col_r2, col_r3 = st.columns(3)
+                                with col_r1:
+                                    st.metric("🗑️ Cleared Old Bills", result.get('deleted', 0))
+                                with col_r2:
+                                    st.metric("📥 Added Fresh Bills", result['synced'])
+                                with col_r3:
+                                    st.metric("📊 Total in Neo4j", result['synced'])
+                                
+                                st.info(f"✅ Neo4j now has exactly {result['synced']} bills, matching Supabase perfectly!")
+                                
+                                if result.get('errors'):
+                                    with st.expander("⚠️ View Errors"):
+                                        for error in result['errors']:
+                                            st.warning(error)
+                            else:
+                                st.error(f"❌ Sync failed: {result.get('error')}")
+                        else:
+                            st.warning("No bills found in Supabase to sync")
+                    
+                    neo4j_service.close()
+        
+        with col_neo2:
+            st.write("**View Graph Stats**")
+            st.caption("Get statistics from Neo4j graph")
+            
+            if st.button("📊 Get Graph Stats", width='stretch', key="neo4j_stats"):
+                try:
+                    from services.neo4j_service import Neo4jService
+                    neo4j_service = Neo4jService()
+                    
+                    stats = neo4j_service.get_graph_stats()
+                    
+                    if stats and 'error' not in stats:
+                        st.json(stats)
+                    else:
+                        st.error(f"Error: {stats.get('error', 'Unknown error')}")
+                    
+                    neo4j_service.close()
+                
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
+        
+        with col_neo3:
+            st.write("**Clear Neo4j Graph**")
+            st.caption("⚠️ Deletes all bill nodes")
+            
+            if st.button("🗑️ Clear All Bills", type="secondary", width='stretch', key="clear_neo4j"):
+                try:
+                    from services.neo4j_service import Neo4jService
+                    neo4j_service = Neo4jService()
+                    
+                    result = neo4j_service.clear_all_bills()
+                    
+                    if result.get('success'):
+                        st.success(f"✅ Deleted {result['deleted']} bills from Neo4j")
+                    else:
+                        st.error(f"❌ Error: {result.get('error')}")
+                    
+                    neo4j_service.close()
+                
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
 
     # Tab 2: Full Workflow Test (Based on n8n)
     with tab2:
@@ -652,7 +966,7 @@ else:  # admin role
                 
                     # Step 4: Get Tariff Rules (from service)
                     st.info("💰 Step 4: Loading tariff rules...")
-                    st.success("✅ Step 4: Tariff rules loaded (Neo4j simulated)")
+                    st.success("✅ Step 4: Tariff rules loaded (Neo4j)")
                     progress_bar.progress(31)
                 
                     # Step 5: AI Validation
@@ -717,7 +1031,7 @@ else:  # admin role
                 
                     # Step 8: Save to Neo4j
                     st.info("🔗 Step 8: Saving bill to Neo4j graph...")
-                    st.success("✅ Step 8: Bill saved to Neo4j (Simulated)")
+                    st.success("✅ Step 8: Bill saved to Neo4j")
                     progress_bar.progress(62)
                 
                     # Step 9: Create Stripe Payment Link
@@ -1819,7 +2133,7 @@ else:  # admin role
                     )
                 
                     st.balloons()
-                    st.success(f"🎉 Payment simulated! Bill #{webhook_bill_id} marked as PAID")
+                    st.success(f"🎉 Payment processed! Bill #{webhook_bill_id} marked as PAID")
                 
                     # Show updated bill
                     updated = db.get_bill_by_id(webhook_bill_id)

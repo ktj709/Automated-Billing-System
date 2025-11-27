@@ -81,7 +81,7 @@ class DatabaseService:
     
     @retry(max_attempts=3, delay=1, backoff=2, exceptions=(Exception,))
     def get_historical_readings(self, meter_id: str, limit: int = 10) -> List[Dict]:
-        """Retrieve historical meter readings"""
+        """Retrieve historical meter readings for a specific meter"""
         logger.debug(f"Fetching {limit} historical readings for meter {meter_id}")
         
         try:
@@ -108,6 +108,35 @@ class DatabaseService:
         with self.get_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 cur.execute(query, (meter_id, limit))
+                results = cur.fetchall()
+                return [dict(row) for row in results]
+    
+    def get_all_readings(self, limit: int = 10000) -> List[Dict]:
+        """Retrieve ALL meter readings from database"""
+        logger.debug(f"Fetching all readings (limit: {limit})")
+        
+        try:
+            if self.use_supabase:
+                response = self.supabase.table('meter_readings')\
+                    .select('*')\
+                    .order('reading_date', desc=True)\
+                    .limit(limit)\
+                    .execute()
+                logger.info(f"Retrieved {len(response.data)} total readings")
+                return response.data
+        except Exception as e:
+            logger.error(f"Error fetching all readings: {e}")
+            raise
+        
+        query = """
+            SELECT * FROM meter_readings 
+            ORDER BY reading_date DESC 
+            LIMIT %s
+        """
+        
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(query, (limit,))
                 results = cur.fetchall()
                 return [dict(row) for row in results]
     
