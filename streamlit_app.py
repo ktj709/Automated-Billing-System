@@ -562,40 +562,6 @@ else:  # admin role
         "📋 Meter Readings", 
         "💰 Generate Bill",
         "📈 Analytics & Reports"
-    ])
-
-    # =========================
-    # Tab 1: Dashboard
-    # =========================
-    with tab1:
-        st.header("📊 System Overview")
-        
-        # Meter filter and refresh
-        col_filter1, col_filter2, col_filter3 = st.columns([2, 1, 1])
-        
-        with col_filter1:
-            dashboard_meter = st.text_input("View readings for Meter ID:", value="METER001", key="dashboard_meter_filter")
-        
-        with col_filter2:
-            st.write("")
-            st.write("")
-            if st.button("🔍 Load Readings", type="primary", use_container_width=True, key="dashboard_load"):
-                st.cache_resource.clear()
-                st.rerun()
-        
-        with col_filter3:
-            st.write("")
-            st.write("")
-            if st.button("🔄 Refresh All", use_container_width=True, key="dashboard_refresh"):
-                st.cache_resource.clear()
-                st.rerun()
-        
-        st.markdown("---")
-
-        # =========================
-        # PENDING BILLS SECTION  
-        # =========================
-        st.markdown("### 📋 Pending Bills to Review")
         st.markdown("✨ **Recent readings from field engineers awaiting bill generation:**")
         
         try:
