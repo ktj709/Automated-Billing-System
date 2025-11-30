@@ -1042,25 +1042,6 @@ else:  # admin role
         
             st.markdown("---")
         
-            # Recent Readings Table
-            if readings:
-                st.subheader(f"📈 Recent Meter Readings - {dashboard_meter}")
-                import pandas as pd
-                df = pd.DataFrame(readings[:10])
-                df['reading_date'] = pd.to_datetime(df['reading_date'])
-                df = df.sort_values('reading_date', ascending=False)
-                st.dataframe(
-                    df[['reading_date', 'reading_value', 'meter_id', 'customer_id']], 
-                    use_container_width=True
-                )
-                
-                # Show last updated time
-                st.caption(f"🕒 Last refreshed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-            else:
-                st.warning(
-                    f"No meter readings found for {dashboard_meter}. "
-                    "Field engineers can add readings, or check the meter ID."
-                )
     
         except Exception as e:
             st.error(f"Error loading data: {str(e)}")
