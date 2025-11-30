@@ -552,48 +552,7 @@ else:  # admin role
         except Exception as e:
             st.error(f"Error loading bills from Neo4j: {str(e)}")
 
-    # Advanced Analytics & RAG (Neo4j + OpenAI)
-    st.markdown("---")
-    st.header("🤖 Advanced Analytics & RAG (Neo4j + OpenAI)")
-    st.text_input("Enter your OpenAI API Key", value=st.session_state.openai_api_key, key="openai_api_key")
-    if st.session_state.openai_api_key:
-        openai.api_key = st.session_state.openai_api_key
-        st.success("OpenAI API Key set!")
-        # Example RAG: Query Neo4j for context, then use OpenAI to answer a question
-        rag_query = st.text_input("Ask a question about bills, readings, or customers:", key="rag_query")
-        if rag_query:
-            try:
-                from services.neo4j_service import Neo4jService
-                neo4j_service = Neo4jService()
-                
-                if not neo4j_service.is_connected():
-                    st.error("❌ Neo4j is not connected. Cannot perform RAG query.")
-                else:
-                    # Retrieve context from Neo4j
-                    with neo4j_service.driver.session() as session:
-                        context_query = "MATCH (c:Customer)-[:HAS_BILL]->(b:Bill)<-[:GENERATED_BILL]-(m:Meter) RETURN b, c, m LIMIT 5"
-                        result = session.run(context_query)
-                        context = ""
-                        for record in result:
-                            b = record["b"]
-                            c = record["c"]
-                            m = record["m"]
-                            # Using dict-like access; adjust if using neo4j.Node properties
-                            context += f"Bill: {b.get('amount')} for Customer {c.get('id')} on meter {m.get('id')}\n"
-                    
-                    # Use OpenAI LLM for answer
-                    prompt = f"Context:\n{context}\n\nQuestion: {rag_query}\nAnswer:"
-                    try:
-                        response = openai.Completion.create(
-                            engine="text-davinci-003",
-                            prompt=prompt,
-                            max_tokens=150
-                        )
-                        st.markdown(f"**LLM Answer:** {response.choices[0].text.strip()}")
-                    except Exception as e:
-                        st.error(f"OpenAI API Error: {str(e)}")
-            except Exception as e:
-                st.error(f"Error with RAG query: {str(e)}")
+
 
     # Admin Main Content Tabs
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -633,33 +592,7 @@ else:  # admin role
         
         st.markdown("---")
 
-        # =========================
-        # 🔄 Complete Workflow Test (Option A: right after filters)
-        # =========================
-        st.header("🔄 Complete Workflow Test")
-        st.markdown("### Testing all 13 steps from n8n workflow")
-    
-        # Show workflow steps
-        with st.expander("📋 View Complete Workflow Steps", expanded=False):
-            steps = [
-                "1️⃣ Webhook - Receive meter reading",
-                "2️⃣ Auth0 Token Verification",
-                "3️⃣ Get Historical Readings from DB",
-                "4️⃣ Get Tariff Rules from Neo4j",
-                "5️⃣ AI Validation Agent - Validate reading",
-                "6️⃣ AI Calculation Agent - Calculate bill",
-                "7️⃣ Store Bill in Database",
-                "8️⃣ Save Bill to Neo4j Graph",
-                "9️⃣ Create Stripe Payment Link",
-                "🔟 Update DB with Payment Info",
-                "1️⃣1️⃣ AI Notification Agent - Generate message",
-                "1️⃣2️⃣ Send Discord Notification",
-                "1️⃣3️⃣ Log Notification in DB"
-            ]
-            for step in steps:
-                st.write(step)
-    
-        st.markdown("---")
+
     
         # Option to fetch latest reading from database
         st.markdown("### 📥 Fetch Reading from Database")
@@ -1189,6 +1122,49 @@ else:  # admin role
                     st.error(f"❌ Error: {str(e)}")
 
         st.markdown("---")
+
+    # Advanced Analytics & RAG (Neo4j + OpenAI)
+    st.markdown("---")
+    st.header("🤖 Advanced Analytics & RAG (Neo4j + OpenAI)")
+    st.text_input("Enter your OpenAI API Key", value=st.session_state.openai_api_key, key="openai_api_key")
+    if st.session_state.openai_api_key:
+        openai.api_key = st.session_state.openai_api_key
+        st.success("OpenAI API Key set!")
+        # Example RAG: Query Neo4j for context, then use OpenAI to answer a question
+        rag_query = st.text_input("Ask a question about bills, readings, or customers:", key="rag_query")
+        if rag_query:
+            try:
+                from services.neo4j_service import Neo4jService
+                neo4j_service = Neo4jService()
+                
+                if not neo4j_service.is_connected():
+                    st.error("❌ Neo4j is not connected. Cannot perform RAG query.")
+                else:
+                    # Retrieve context from Neo4j
+                    with neo4j_service.driver.session() as session:
+                        context_query = "MATCH (c:Customer)-[:HAS_BILL]->(b:Bill)<-[:GENERATED_BILL]-(m:Meter) RETURN b, c, m LIMIT 5"
+                        result = session.run(context_query)
+                        context = ""
+                        for record in result:
+                            b = record["b"]
+                            c = record["c"]
+                            m = record["m"]
+                            # Using dict-like access; adjust if using neo4j.Node properties
+                            context += f"Bill: {b.get('amount')} for Customer {c.get('id')} on meter {m.get('id')}\n"
+                    
+                    # Use OpenAI LLM for answer
+                    prompt = f"Context:\n{context}\n\nQuestion: {rag_query}\nAnswer:"
+                    try:
+                        response = openai.Completion.create(
+                            engine="text-davinci-003",
+                            prompt=prompt,
+                            max_tokens=150
+                        )
+                        st.markdown(f"**LLM Answer:** {response.choices[0].text.strip()}")
+                    except Exception as e:
+                        st.error(f"OpenAI API Error: {str(e)}")
+            except Exception as e:
+                st.error(f"Error with RAG query: {str(e)}")
 
     # =========================
     # Tab 2: Payment Status
