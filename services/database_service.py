@@ -443,3 +443,98 @@ class DatabaseService:
                 result = cur.fetchone()
                 conn.commit()
                 return dict(result)
+    
+    @retry(max_attempts=3, delay=1, backoff=2, exceptions=(Exception,))
+    def get_unbilled_readings(self, limit: int = 100) -> List[Dict]:
+        """
+        Retrieve meter readings that don't have corresponding bills yet.
+        A reading is considered unbilled if there's no bill with a billing_period_end 
+        matching or after the reading_date for the same meter.
+        """
+        logger.debug(f"Fetching unbilled readings (limit: {limit})")
+        
+        try:
+            if self.use_supabase:
+                # Get all readings
+                readings_response = self.supabase.table('meter_readings')\
+                    .select('*')\
+                    .order('reading_date', desc=True)\
+                    .limit(limit * 2)\
+                    .execute()
+                
+                all_readings = readings_response.data
+                
+                # Get all bills
+                bills_response = self.supabase.table('bills')\
+                    .select('meter_id, billing_period_end')\
+                    .execute()
+                
+                bills = bills_response.data
+                
+                # Create a set of (meter_id, date) tuples for billed readings
+                billed_readings = set()
+                for bill in bills:
+                    billed_readings.add((bill['meter_id'], bill['billing_period_end']))
+                
+                # Filter out readings that already have bills
+                unbilled = []
+                for reading in all_readings:
+                    # Check if this reading has been billed
+                    reading_date = reading['reading_date']
+                    meter_id = reading['meter_id']
+                    
+                    # If no bill exists with this meter and date as billing_period_end, it's unbilled
+                    if (meter_id, reading_date) not in billed_readings:
+                        # Calculate estimated consumption (vs previous reading)
+                        prev_readings = [r for r in all_readings 
+                                       if r['meter_id'] == meter_id 
+                                       and r['reading_date'] < reading_date]
+                        
+                        if prev_readings:
+                            prev_reading = max(prev_readings, key=lambda x: x['reading_date'])
+                            reading['estimated_consumption'] = reading['reading_value'] - prev_reading['reading_value']
+                            reading['previous_reading'] = prev_reading['reading_value']
+                        else:
+                            reading['estimated_consumption'] = reading['reading_value']
+                            reading['previous_reading'] = 0
+                        
+                        unbilled.append(reading)
+                    
+                    if len(unbilled) >= limit:
+                        break
+                
+                logger.info(f"Found {len(unbilled)} unbilled readings")
+                return unbilled
+                
+        except Exception as e:
+            logger.error(f"Error fetching unbilled readings: {e}")
+            raise
+        
+        # Legacy PostgreSQL - simplified version
+        query = """
+            SELECT r.* 
+            FROM meter_readings r
+            LEFT JOIN bills b ON r.meter_id = b.meter_id 
+                AND r.reading_date = b.billing_period_end
+            WHERE b.id IS NULL
+            ORDER BY r.reading_date DESC
+            LIMIT %s
+        """
+        
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(query, (limit,))
+                return [dict(row) for row in cur.fetchall()]
+    
+    def get_pending_bills_count(self) -> int:
+        """Get count of unbilled meter readings"""
+        logger.debug("Fetching unbilled readings count")
+        
+        try:
+            unbilled = self.get_unbilled_readings(limit=1000)
+            count = len(unbilled)
+            logger.info(f"Total unbilled readings: {count}")
+            return count
+        except Exception as e:
+            logger.error(f"Error getting unbilled count: {e}")
+            return 0

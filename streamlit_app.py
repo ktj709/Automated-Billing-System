@@ -592,6 +592,64 @@ else:  # admin role
         
         st.markdown("---")
 
+        # =========================
+        # PENDING BILLS SECTION  
+        # =========================
+        st.markdown("### 📋 Pending Bills to Review")
+        st.markdown("✨ **Recent readings from field engineers awaiting bill generation:**")
+        
+        try:
+            # Fetch unbilled readings
+            unbilled_readings = db.get_unbilled_readings(limit=50)
+            
+            if unbilled_readings:
+                # Show count
+                st.info(f"🔔 **{len(unbilled_readings)} unbilled readings** need bill generation!")
+                
+                # Display table
+                import pandas as pd
+                display_data = []
+                for reading in unbilled_readings[:10]:
+                    display_data.append({
+                        'Customer ID': reading['customer_id'],
+                        'Meter ID': reading['meter_id'],
+                        'Reading': f"{reading['reading_value']:.2f} kWh",
+                        'Date': reading['reading_date'],
+                        'Est. kWh': f"{reading.get('estimated_consumption', 0):.2f}"
+                    })
+                
+                df = pd.DataFrame(display_data)
+                st.dataframe(df, use_container_width=True, hide_index=True)
+                
+                # Quick action buttons
+                st.markdown("**⚡ Quick Actions - Click to Auto-Fill Form:**")
+                cols = st.columns(min(5, len(unbilled_readings)))
+                
+                for idx, reading in enumerate(unbilled_readings[:5]):
+                    with cols[idx]:
+                        meter_short = reading['meter_id'][-4:] if len(reading['meter_id']) > 4 else reading['meter_id']
+                        if st.button(f"📄 {meter_short}", key=f"pending_{idx}", use_container_width=True, type="primary"):
+                            # Clear form cache to force update
+                            for key in ['wf_meter_id', 'wf_customer_id', 'wf_reading', 'wf_date']:
+                                if key in st.session_state:
+                                    del st.session_state[key]
+                            # Store reading for auto-fill
+                            st.session_state['fetched_reading'] = reading
+                            st.session_state['fetched_meter_id'] = reading['meter_id']
+                            st.success(f"✅ Selected {reading['meter_id']} - Scroll down and click 'Run Complete Workflow'!")
+                            st.rerun()
+                
+                if len(unbilled_readings) > 10:
+                    st.caption(f"📊 Showing 10 of {len(unbilled_readings)} total pending bills")
+            else:
+                st.success("✅ **All caught up!** No pending bills at this time.")
+        
+        except Exception as e:
+            st.error(f"❌ Error loading pending bills: {str(e)}")
+        
+        st.markdown("---")
+
+
 
     
         # Option to fetch latest reading from database
@@ -645,12 +703,12 @@ else:  # admin role
                 default_customer = st.session_state.get('fetched_reading', {}).get('customer_id', 'CUST001')
                 default_reading = st.session_state.get('fetched_reading', {}).get('reading_value', 4600.0)
                 
-                wf_meter_id = st.text_input("Meter ID", value=default_meter, key="wf_meter_id")
-                wf_customer_id = st.text_input("Customer ID", value=default_customer, key="wf_customer_id")
-                wf_reading_value = st.number_input("Reading Value (kWh)", min_value=0.0, value=float(default_reading), step=0.1, key="wf_reading")
+                wf_meter_id = st.text_input("Meter ID", value=default_meter)
+                wf_customer_id = st.text_input("Customer ID", value=default_customer)
+                wf_reading_value = st.number_input("Reading Value (kWh)", min_value=0.0, value=float(default_reading), step=0.1)
         
             with col_wf2:
-                wf_reading_date = st.date_input("Reading Date", value=datetime.now(), key="wf_date")
+                wf_reading_date = st.date_input("Reading Date", value=datetime.now())
                 customer_phone = st.text_input("Customer Phone", value="+1234567890", key="wf_phone")
                 discord_user_id = st.text_input(
                     "Discord User ID (optional - for direct mention)",
