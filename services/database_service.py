@@ -538,3 +538,20 @@ class DatabaseService:
         except Exception as e:
             logger.error(f"Error getting unbilled count: {e}")
             return 0
+
+    def delete_reading(self, reading_id: int) -> bool:
+        """Delete a meter reading by ID"""
+        logger.info(f"Deleting reading {reading_id}")
+        try:
+            if self.supabase:
+                self.supabase.table('meter_readings').delete().eq('id', reading_id).execute()
+                return True
+            elif self.conn:
+                with self.conn.cursor() as cur:
+                    cur.execute("DELETE FROM meter_readings WHERE id = %s", (reading_id,))
+                    self.conn.commit()
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Error deleting reading: {e}")
+            return False

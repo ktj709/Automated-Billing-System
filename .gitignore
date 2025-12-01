@@ -10,6 +10,8 @@ ENV/
 
 # Environment variables
 .env
+auth0_token.txt
+.auth0_token.txt
 
 # IDE
 .vscode/
