@@ -147,7 +147,13 @@ DEBUG=True
 .\venv\Scripts\python.exe seed_database.py
 ```
 
-6. **Run the application**
+6. **Generate Auth Token**
+```bash
+.\venv\Scripts\python.exe get_token_simple.py
+```
+This will generate a valid Auth0 token and save it to `auth0_token.txt`. You will need this token for API authentication and for the Streamlit "Auth0 Testing" tab.
+
+7. **Run the application**
 
 **Option A: Streamlit Dashboard (Recommended for testing)**
 ```bash
@@ -278,59 +284,36 @@ APScheduler runs background jobs:
 
 ### Streamlit Dashboard
 
-The Streamlit dashboard provides 8 interactive tabs:
+The updated Streamlit dashboard features a role-based interface:
 
-#### **Tab 1: 📊 Dashboard**
-- System overview with metrics
-- Recent meter readings table
-- Consumption trends
+#### **1. Role Selection**
+- **Field Engineer**: Access simplified meter reading tools.
+- **Administrator**: Access full system management and configuration.
 
-#### **Tab 2: 🔄 Full Workflow Test**
-- Complete 13-step workflow simulation
-- Test meter reading → bill generation
-- Real-time validation results
-- Step-by-step execution logs
+#### **2. Admin Login**
+- Secure login using Auth0 credentials.
+- Requires valid User ID and JWT Token (generated via `get_token_simple.py`).
 
-#### **Tab 3: 🔐 Auth0 Testing**
-- Test JWT token verification
-- Authenticated API requests
-- User information display
-- Token validation results
+#### **3. Field Engineer Dashboard**
+- **➕ Add Reading**: Simple form to submit new meter readings.
+- **📋 Reading History**: View and download historical readings.
+- **Monthly Stats**: Track progress towards monthly reading targets.
 
-#### **Tab 4: 💳 Payment Status**
-- **Get Bill Status**: View bill details by ID with metrics
-- **Customer Bills**: All bills for a customer with summary
-- **Update Status**: Manual status updates (admin/testing)
-- **Webhook Simulator**: Test Stripe webhook events
+#### **4. Admin Dashboard**
+The admin interface provides 6 tabs:
 
-#### **Tab 5: ⏰ Scheduler**
-- View scheduled jobs (4 jobs)
-- Start/stop scheduler
-- Job execution history
-- Configure schedules
-
-#### **Tab 6: 🧮 Tariff Calculator**
-- Calculate bills manually
-- Test different consumption levels
-- View detailed tariff breakdown
-- Fixed charges calculation
-
-#### **Tab 7: 📋 Meter Readings**
-- View historical readings
-- Add new readings
-- Data visualization
-- Reading history table
-
-#### **Tab 8: 💰 Generate Bill**
-- Manual bill generation
-- Custom parameters (meter ID, consumption, etc.)
-- Bill preview
-- Payment link generation
+- **📊 Dashboard**: 
+    - **Modern UI**: KPI cards, new reading review, and quick actions.
+    - **Legacy UI**: Traditional data view.
+- **💳 Payment Status**: Track bill status, customer bills, and simulate webhooks.
+- **⏰ Scheduler**: Manage background jobs (billing, reminders, etc.).
+- **📋 Meter Readings**: Comprehensive view of all meter data.
+- **💰 Generate Bill**: Manual bill generation and payment link creation.
+- **📈 Analytics & Reports**: System analytics (placeholder).
 
 ### REST API Endpoints
 
 #### **Meter Reading Webhook**
-```http
 POST /webhook/meter-reading
 Authorization: Bearer <auth0_token>
 Content-Type: application/json
@@ -743,6 +726,7 @@ Billing/
 │   └── neo4j_setup.cypher      # Neo4j graph (optional)
 │
 ├── test_*.py                   # Test scripts
+├── get_token_simple.py         # Simple Auth0 token generator
 ├── verify_token.py             # Auth0 token verification
 │
 ├── docs/                       # Documentation (optional)
@@ -843,4 +827,4 @@ This project demonstrates:
 
 **Built with ❤️ for automated billing management**
 
-*Last Updated: November 18, 2025*
+
