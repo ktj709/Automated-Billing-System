@@ -4,6 +4,9 @@ Streamlit Dashboard for Billing System Testing
 import streamlit as st
 import json
 from datetime import datetime, timedelta
+import importlib
+import services.database_service
+importlib.reload(services.database_service)
 from services import DatabaseService, TariffRules
 from services.graph_service import GraphService
 import openai
@@ -20,10 +23,10 @@ if 'user_role' not in st.session_state:
 
 # Initialize services
 @st.cache_resource
-def get_db_service():
+def get_db_service(ttl_hash=None):
     return DatabaseService()
 
-db = get_db_service()
+db = get_db_service(ttl_hash="v2")
 
 # ==============================================
 # ROLE SELECTION PAGE
@@ -664,7 +667,11 @@ else:  # admin role
                                     st.rerun()
                             with b2:
                                 if st.button("REJECT", key=f"rej_{i}", type="secondary", use_container_width=True):
-                                    st.warning(f"Rejected {apt}")
+                                    if db.delete_reading(r['id']):
+                                        st.warning(f"Rejected and deleted reading for {apt}")
+                                        st.rerun()
+                                    else:
+                                        st.error("Failed to delete reading")
                 else:
                     st.info("No new readings to review.")
                     
