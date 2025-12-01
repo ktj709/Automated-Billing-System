@@ -752,7 +752,7 @@ Billing/
 | Auth0 Authentication | ✅ | JWT RS256 |
 | Error Handling | ✅ | Retry + Circuit breaker |
 | Logging | ✅ | Rotating files (10MB) |
-| Dashboard | ✅ | 8 interactive tabs |
+| Dashboard | ✅ | Role-based (Admin/Field Engineer) |
 | REST API | ✅ | Complete Flask API |
 | Payment Status | ✅ | 4 subtabs in dashboard |
 | Database | ✅ | Supabase (PostgreSQL) |
