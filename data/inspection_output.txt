@@ -1,0 +1,21 @@
+                 0        1      2     3                                       4          5                                         6
+0              NaN      NaN    NaN   NaN                                     NaN        NaN                                       NaN
+1   Blessings City      NaN    NaN   NaN                                     NaN        NaN                                       NaN
+2              NaN      NaN    NaN   NaN                                     NaN        NaN                                       NaN
+3              NaN      NaN    NaN   NaN                                     NaN        NaN                                       NaN
+4              NaN      NaN    NaN   NaN                                     NaN        NaN                                       NaN
+5            Sr.No  Flat no  Floor  Type                             Client Name  Meter No.  Maintenance and Fixed Charges in Rupees 
+6                1       C8     SF  4BHK       S.Jora Singh and S. Bahadur Singh   21129958                                      1890
+7                2       C8     FF  4BHK                 Jaswant  singh randhawa   21129916                                      1890
+8                3       C8     GF  4BHK       S.Jora Singh and S. Bahadur Singh   24114213                                      1890
+9                4       C9     SF  4BHK         RAJBIR KAUR W/o Sukhinder Singh     528011                                      1890
+10               5       C9     FF  4BHK                     JARNAIL SINGH POWAR   22102869                                      1890
+11               6       C9     GF  4BHK                             JASPAL SOHI     528007                                      1890
+12               7      C16     SF  4BHK                      balbir kaur jabble     528010                                      1890
+13               8      C16     FF  4BHK                  Dr. Sant Singh Dhillon   24114215                                      1890
+14               9      C16     GF  4BHK         Mrs. Neena Sood and Sudesh Sood     528004                                      1890
+15              10      C17     SF  4BHK  Mr. Rajan Kumar s/o Ram Parshad Sharma     528014                                      1890
+16              11      C17     FF  4BHK                     Unique Contructions   22102921                                      1890
+17              12      C17     GF  4BHK                     GIRDHARI LAL CHOPRA   21082127                                      1890
+18              13      C10     SF  4BHK                            Balbir Singh   20054610                                      1890
+19              14      C10     FF  4BHK                             Daljit Kaur   20054604                                      1890
