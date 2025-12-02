@@ -225,7 +225,9 @@ elif st.session_state.user_role == "field_engineer":
                         reading_date = reading_date_str
                     
                     if reading_date.month == today.month and reading_date.year == today.year:
-                        monthly_count += 1
+                        # Only count actual readings (value > 0), excluding imported template data
+                        if float(reading.get('reading_value', 0)) > 0:
+                            monthly_count += 1
                 except Exception:
                     continue
             
@@ -301,25 +303,25 @@ elif st.session_state.user_role == "field_engineer":
             st.warning("Flat registry not found. Please run the import_registry script to load flats from the Excel file.")
         else:
             flat_options = [
-                f"Flat {f.get('flat_no', '')} – {f.get('client_name', '')} – Meter {f.get('meter_id', '')}"
+                f"[{f.get('unit_id', '?')}] Flat {f.get('flat_no', '')} (Floor: {f.get('floor', '')}) – {f.get('client_name', '')}"
                 for f in flats
             ]
 
             with st.form("add_reading_fe", clear_on_submit=True):
                 st.subheader("Select Flat and Enter Reading")
 
-                selected_label = st.selectbox("🏢 Flat", flat_options, index=0)
+                selected_label = st.selectbox("🏢 Flat / Unit", flat_options, index=0)
                 selected_flat = flats[flat_options.index(selected_label)]
 
                 col_meta1, col_meta2 = st.columns(2)
                 with col_meta1:
+                    st.text_input("Unit ID", value=selected_flat.get("unit_id", ""), disabled=True)
                     st.text_input("Flat no", value=selected_flat.get("flat_no", ""), disabled=True)
                     st.text_input("Floor", value=selected_flat.get("floor", ""), disabled=True)
-                    st.text_input("Type", value=selected_flat.get("type", ""), disabled=True)
                 with col_meta2:
                     st.text_input("Client Name", value=selected_flat.get("client_name", ""), disabled=True)
                     st.text_input("Meter No.", value=selected_flat.get("meter_id", ""), disabled=True)
-                    st.text_input("Maintenance & Fixed Charges (₹)", value=str(selected_flat.get("fixed_charge", "")), disabled=True)
+                    st.text_input("Type", value=selected_flat.get("type", ""), disabled=True)
 
                 st.markdown("---")
                 reading_value = st.number_input(
@@ -336,13 +338,21 @@ elif st.session_state.user_role == "field_engineer":
                     if reading_value > 0:
                         try:
                             meter_id = selected_flat.get("meter_id", "")
-                            customer_id = f"FLAT-{selected_flat.get('flat_no', '')}"
+                            unit_id = selected_flat.get("unit_id", "")
+                            
+                            # Use Unit ID as the primary customer identifier if available
+                            customer_id = f"UNIT-{unit_id}" if unit_id else f"FLAT-{selected_flat.get('flat_no', '')}"
 
                             reading_data = {
                                 "meter_id": meter_id,
                                 "customer_id": customer_id,
                                 "reading_value": reading_value,
                                 "reading_date": reading_date.strftime("%Y-%m-%d"),
+                                "unit_id": unit_id,
+                                "flat_no": selected_flat.get("flat_no", ""),
+                                "floor": selected_flat.get("floor", ""),
+                                "type": selected_flat.get("type", ""),
+                                "client_name": selected_flat.get("client_name", ""),
                                 "created_at": datetime.now().isoformat()
                             }
 
@@ -561,8 +571,19 @@ else:  # admin role
         # ============================================
         # Load required data
         # ============================================
+        # Initialize session state for approved readings if not present
+        if "approved_readings" not in st.session_state:
+            st.session_state.approved_readings = set()
+
         try:
-            pending_readings = db.get_unbilled_readings(limit=50)
+            # Get unbilled readings and filter out 0-value readings (imported template data)
+            raw_readings = db.get_unbilled_readings(limit=100)
+            # Filter: >0 value AND not in approved set
+            pending_readings = [
+                r for r in raw_readings 
+                if float(r.get('reading_value', 0)) > 0 
+                and r['id'] not in st.session_state.approved_readings
+            ]
         except:
             pending_readings = []
 
@@ -570,10 +591,20 @@ else:  # admin role
 
         try:
             all_bills = db.get_all_bills()
-            invoices = len([b for b in all_bills if b.get("status") == "pending"])
-            overdue = db.get_pending_bills_count() # Readings waiting for bill generation
+            # Count pending, generated, and overdue bills as invoices to be processed/paid
+            invoices = len([b for b in all_bills if b.get("status") in ["pending", "generated", "overdue"]])
+            
+            # Calculate overdue (unbilled readings) manually to filter out 0-value imports AND approved readings
+            unbilled_all = db.get_unbilled_readings(limit=1000)
+            overdue = len([
+                r for r in unbilled_all 
+                if float(r.get('reading_value', 0)) > 0 
+                and r['id'] not in st.session_state.approved_readings
+            ])
+            
             total_paid = sum(b.get("amount", 0) for b in all_bills if b.get("status") == "paid")
-            total_outstanding = sum(b.get("amount", 0) for b in all_bills if b.get("status") == "pending")
+            # Outstanding includes pending, generated, and overdue bills
+            total_outstanding = sum(b.get("amount", 0) for b in all_bills if b.get("status") in ["pending", "generated", "overdue"])
         except:
             invoices = overdue = total_paid = total_outstanding = 0
 
@@ -680,51 +711,69 @@ else:  # admin role
 
                 flats = load_flat_registry()
                 flat_by_meter = {f.get("meter_id"): f for f in flats if f.get("meter_id")}
+                # Initialize session state for approved readings if not present
+                if "approved_readings" not in st.session_state:
+                    st.session_state.approved_readings = set()
 
-                # Header Row
-                h1, h2, h3, h4, h5, h6, h7 = st.columns([1.5, 1, 1, 1, 1, 1, 2])
-                h1.markdown("**Meter ID**")
-                h2.markdown("**Flat no**")
-                h3.markdown("**Floor**")
-                h4.markdown("**New Reading**")
-                h5.markdown("**Fixed Charge (₹)**")
-                h6.markdown("**Total Amount (₹)**")
-                h7.markdown("**Actions**")
-                st.markdown("<hr style='margin: 5px 0;'>", unsafe_allow_html=True)
-                
-                if pending_readings:
-                    for i, r in enumerate(pending_readings[:5]):  # Show top 5
-                        c1, c2, c3, c4, c5, c6, c7 = st.columns([1.5, 1, 1, 1, 1, 1, 2])
+                # Filter out readings that have been approved in this session
+                display_readings = [r for r in pending_readings if r['id'] not in st.session_state.approved_readings]
+
+                if display_readings:
+                    st.info(f"📝 Found {len(display_readings)} new readings to review")
+                    
+                    # Table Header
+                    h1, h2, h3, h4, h5, h6, h7, h8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
+                    h1.markdown("**Unit ID**")
+                    h2.markdown("**Flat**")
+                    h3.markdown("**Floor**")
+                    h4.markdown("**Client Name**")
+                    h5.markdown("**Meter ID**")
+                    h6.markdown("**Reading**")
+                    h7.markdown("**Est. (₹)**")
+                    h8.markdown("**Actions**")
+                    st.markdown("<hr style='margin: 5px 0;'>", unsafe_allow_html=True)
+
+                    for i, r in enumerate(display_readings[:5]):  # Show top 5
+                        c1, c2, c3, c4, c5, c6, c7, c8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
 
                         meter_id = r.get("meter_id")
-                        flat = flat_by_meter.get(meter_id, {})
-                        flat_no = flat.get("flat_no", "-")
-                        floor = flat.get("floor", "-")
-                        fixed_charge = flat.get("fixed_charge", 0) or 0
+                        
+                        # Try to get metadata from reading object first (new schema), then fallback to registry
+                        unit_id = r.get("unit_id") or flat_by_meter.get(meter_id, {}).get("unit_id", "-")
+                        flat_no = r.get("flat_no") or flat_by_meter.get(meter_id, {}).get("flat_no", "-")
+                        floor = r.get("floor") or flat_by_meter.get(meter_id, {}).get("floor", "-")
+                        client_name = r.get("client_name") or flat_by_meter.get(meter_id, {}).get("client_name", "-")
+                        
                         reading_val = r.get("reading_value")
-                        usage = r.get("estimated_consumption", reading_val)
+                        
+                        # Calculate estimated bill (simple logic)
+                        prev_reading = 0 # TODO: Fetch previous reading
+                        usage = reading_val - prev_reading if reading_val else 0
                         energy_amount = (usage or 0) * 7.5  # Approx rate
-                        total_amount = energy_amount + fixed_charge
 
                         with c1:
-                            st.write(str(meter_id))
+                            st.write(str(unit_id))
                         with c2:
                             st.write(str(flat_no))
                         with c3:
                             st.write(str(floor))
                         with c4:
-                            st.write(f"{reading_val}")
+                            st.write(str(client_name))
                         with c5:
-                            st.write(f"₹{fixed_charge:.0f}")
+                            st.write(str(meter_id))
                         with c6:
-                            st.write(f"₹{total_amount:.0f}")
-
+                            st.write(f"{reading_val}")
                         with c7:
+                            st.write(f"₹{energy_amount:.0f}")
+
+                        with c8:
                             b1, b2 = st.columns(2)
                             with b1:
                                 if st.button("APPROVE", key=f"app_{i}", type="primary", use_container_width=True):
                                     st.session_state["fetched_reading"] = r
                                     st.session_state["fetched_meter_id"] = r["meter_id"]
+                                    # Add to approved set to hide from list
+                                    st.session_state.approved_readings.add(r['id'])
                                     st.success(f"Approved {meter_id}")
                                     st.rerun()
                             with b2:
@@ -737,7 +786,7 @@ else:  # admin role
                 else:
                     st.info("No new readings to review.")
                     
-                if len(pending_readings) > 5:
+                if len(display_readings) > 5:
                     if st.button(" View All Readings "):
                         pass
 
@@ -1452,7 +1501,7 @@ else:  # admin role
         with col3:
             if 'quick_pay_bill' in st.session_state and st.session_state['quick_pay_bill']:
                 bill = st.session_state['quick_pay_bill']
-                if bill.get('status', '').lower() == 'pending' and bill.get('payment_link'):
+                if bill.get('status', '').lower() in ['pending', 'generated', 'overdue'] and bill.get('payment_link'):
                     st.markdown(f"[**💳 Pay ₹{bill.get('amount', 0):,.2f}**]({bill.get('payment_link')})")
                 elif bill.get('status', '').lower() == 'paid':
                     st.success("✅ Already Paid")
@@ -1513,8 +1562,8 @@ else:  # admin role
                                 if bill.get('payment_link'):
                                     st.write(f"Payment Link: [Click here]({bill.get('payment_link')})")
                                 
-                                    # Add Pay Now button if bill is pending
-                                    if bill.get('status', '').lower() == 'pending':
+                                    # Add Pay Now button if bill is pending, generated, or overdue
+                                    if bill.get('status', '').lower() in ['pending', 'generated', 'overdue']:
                                         if st.button("💳 Pay Now", key=f"pay_bill_{bill_id}", type="primary"):
                                             st.info("🔗 Use the link above to complete payment in a new tab.")
                                 else:
@@ -1558,7 +1607,7 @@ else:  # admin role
                     
                         total_amount = sum(b.get('amount', 0) for b in bills)
                         paid_bills = sum(1 for b in bills if b.get('status') == 'paid')
-                        pending_bills = sum(1 for b in bills if b.get('status') == 'pending')
+                        pending_bills = sum(1 for b in bills if b.get('status') in ['pending', 'generated', 'overdue'])
                     
                         with col1:
                             st.metric("Total Amount", f"₹{total_amount:,.2f}")
@@ -1597,7 +1646,7 @@ else:  # admin role
                                         cols[3].write(f"Created: {bill.get('created_at')}")
                                 
                                     with col_b:
-                                        if bill.get('status', '').lower() == 'pending' and bill.get('payment_link'):
+                                        if bill.get('status', '').lower() in ['pending', 'generated', 'overdue'] and bill.get('payment_link'):
                                             if st.button(
                                                 f"💳 Pay ₹{bill.get('amount', 0):,.2f}", 
                                                 key=f"pay_customer_bill_{bill.get('id')}", 

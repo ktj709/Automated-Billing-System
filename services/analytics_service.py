@@ -52,7 +52,8 @@ class AnalyticsService:
                 total_bills = len(df)
                 total_revenue = df['amount'].sum()
                 collected_revenue = df[df['status'] == 'paid']['amount'].sum()
-                pending_revenue = df[df['status'] == 'pending']['amount'].sum()
+                collected_revenue = df[df['status'] == 'paid']['amount'].sum()
+                pending_revenue = df[df['status'].isin(['pending', 'generated', 'overdue'])]['amount'].sum()
                 average_bill = df['amount'].mean()
                 min_bill = df['amount'].min()
                 max_bill = df['amount'].max()
@@ -189,7 +190,8 @@ class AnalyticsService:
             
             total_bills = len(df)
             paid_bills = len(df[df['status'] == 'paid'])
-            pending_bills = len(df[df['status'] == 'pending'])
+            paid_bills = len(df[df['status'] == 'paid'])
+            pending_bills = len(df[df['status'].isin(['pending', 'generated', 'overdue'])])
             overdue_bills = len(df[df['status'] == 'overdue'])
             
             success_rate = (paid_bills / total_bills * 100) if total_bills > 0 else 0
