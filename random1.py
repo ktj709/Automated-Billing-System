@@ -301,7 +301,7 @@ elif st.session_state.user_role == "field_engineer":
             st.warning("Flat registry not found. Please run the import_registry script to load flats from the Excel file.")
         else:
             flat_options = [
-                f"Flat {f.get('flat_no', '')} – {f.get('client_name', '')} – Meter {f.get('meter_id', '')}"
+                f"Flat {f.get('flat_no', '')} (Floor: {f.get('floor', '')}) – {f.get('client_name', '')} – Meter {f.get('meter_id', '')}"
                 for f in flats
             ]
 
@@ -319,7 +319,6 @@ elif st.session_state.user_role == "field_engineer":
                 with col_meta2:
                     st.text_input("Client Name", value=selected_flat.get("client_name", ""), disabled=True)
                     st.text_input("Meter No.", value=selected_flat.get("meter_id", ""), disabled=True)
-                    st.text_input("Maintenance & Fixed Charges (₹)", value=str(selected_flat.get("fixed_charge", "")), disabled=True)
 
                 st.markdown("---")
                 reading_value = st.number_input(
@@ -682,29 +681,26 @@ else:  # admin role
                 flat_by_meter = {f.get("meter_id"): f for f in flats if f.get("meter_id")}
 
                 # Header Row
-                h1, h2, h3, h4, h5, h6, h7 = st.columns([1.5, 1, 1, 1, 1, 1, 2])
+                h1, h2, h3, h4, h5, h6 = st.columns([1.5, 1, 1, 1, 1, 2])
                 h1.markdown("**Meter ID**")
                 h2.markdown("**Flat no**")
                 h3.markdown("**Floor**")
                 h4.markdown("**New Reading**")
-                h5.markdown("**Fixed Charge (₹)**")
-                h6.markdown("**Total Amount (₹)**")
-                h7.markdown("**Actions**")
+                h5.markdown("**Estimated Amount (₹)**")
+                h6.markdown("**Actions**")
                 st.markdown("<hr style='margin: 5px 0;'>", unsafe_allow_html=True)
                 
                 if pending_readings:
                     for i, r in enumerate(pending_readings[:5]):  # Show top 5
-                        c1, c2, c3, c4, c5, c6, c7 = st.columns([1.5, 1, 1, 1, 1, 1, 2])
+                        c1, c2, c3, c4, c5, c6 = st.columns([1.5, 1, 1, 1, 1, 2])
 
                         meter_id = r.get("meter_id")
                         flat = flat_by_meter.get(meter_id, {})
                         flat_no = flat.get("flat_no", "-")
                         floor = flat.get("floor", "-")
-                        fixed_charge = flat.get("fixed_charge", 0) or 0
                         reading_val = r.get("reading_value")
                         usage = r.get("estimated_consumption", reading_val)
                         energy_amount = (usage or 0) * 7.5  # Approx rate
-                        total_amount = energy_amount + fixed_charge
 
                         with c1:
                             st.write(str(meter_id))
@@ -715,11 +711,9 @@ else:  # admin role
                         with c4:
                             st.write(f"{reading_val}")
                         with c5:
-                            st.write(f"₹{fixed_charge:.0f}")
-                        with c6:
-                            st.write(f"₹{total_amount:.0f}")
+                            st.write(f"₹{energy_amount:.0f}")
 
-                        with c7:
+                        with c6:
                             b1, b2 = st.columns(2)
                             with b1:
                                 if st.button("APPROVE", key=f"app_{i}", type="primary", use_container_width=True):
