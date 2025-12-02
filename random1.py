@@ -591,7 +591,8 @@ else:  # admin role
 
         try:
             all_bills = db.get_all_bills()
-            invoices = len([b for b in all_bills if b.get("status") == "pending"])
+            # Count pending, generated, and overdue bills as invoices to be processed/paid
+            invoices = len([b for b in all_bills if b.get("status") in ["pending", "generated", "overdue"]])
             
             # Calculate overdue (unbilled readings) manually to filter out 0-value imports AND approved readings
             unbilled_all = db.get_unbilled_readings(limit=1000)
@@ -602,7 +603,8 @@ else:  # admin role
             ])
             
             total_paid = sum(b.get("amount", 0) for b in all_bills if b.get("status") == "paid")
-            total_outstanding = sum(b.get("amount", 0) for b in all_bills if b.get("status") == "pending")
+            # Outstanding includes pending, generated, and overdue bills
+            total_outstanding = sum(b.get("amount", 0) for b in all_bills if b.get("status") in ["pending", "generated", "overdue"])
         except:
             invoices = overdue = total_paid = total_outstanding = 0
 
@@ -1499,7 +1501,7 @@ else:  # admin role
         with col3:
             if 'quick_pay_bill' in st.session_state and st.session_state['quick_pay_bill']:
                 bill = st.session_state['quick_pay_bill']
-                if bill.get('status', '').lower() == 'pending' and bill.get('payment_link'):
+                if bill.get('status', '').lower() in ['pending', 'generated', 'overdue'] and bill.get('payment_link'):
                     st.markdown(f"[**💳 Pay ₹{bill.get('amount', 0):,.2f}**]({bill.get('payment_link')})")
                 elif bill.get('status', '').lower() == 'paid':
                     st.success("✅ Already Paid")
@@ -1560,8 +1562,8 @@ else:  # admin role
                                 if bill.get('payment_link'):
                                     st.write(f"Payment Link: [Click here]({bill.get('payment_link')})")
                                 
-                                    # Add Pay Now button if bill is pending
-                                    if bill.get('status', '').lower() == 'pending':
+                                    # Add Pay Now button if bill is pending, generated, or overdue
+                                    if bill.get('status', '').lower() in ['pending', 'generated', 'overdue']:
                                         if st.button("💳 Pay Now", key=f"pay_bill_{bill_id}", type="primary"):
                                             st.info("🔗 Use the link above to complete payment in a new tab.")
                                 else:
@@ -1605,7 +1607,7 @@ else:  # admin role
                     
                         total_amount = sum(b.get('amount', 0) for b in bills)
                         paid_bills = sum(1 for b in bills if b.get('status') == 'paid')
-                        pending_bills = sum(1 for b in bills if b.get('status') == 'pending')
+                        pending_bills = sum(1 for b in bills if b.get('status') in ['pending', 'generated', 'overdue'])
                     
                         with col1:
                             st.metric("Total Amount", f"₹{total_amount:,.2f}")
@@ -1644,7 +1646,7 @@ else:  # admin role
                                         cols[3].write(f"Created: {bill.get('created_at')}")
                                 
                                     with col_b:
-                                        if bill.get('status', '').lower() == 'pending' and bill.get('payment_link'):
+                                        if bill.get('status', '').lower() in ['pending', 'generated', 'overdue'] and bill.get('payment_link'):
                                             if st.button(
                                                 f"💳 Pay ₹{bill.get('amount', 0):,.2f}", 
                                                 key=f"pay_customer_bill_{bill.get('id')}", 
