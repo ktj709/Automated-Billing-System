@@ -702,124 +702,126 @@ else:  # admin role
 
             st.markdown("---")
 
-            # ---------- MAIN CONTENT (SPLIT VIEW) ----------
-            left_col, right_col = st.columns([2, 1])
+            # ---------- MAIN CONTENT ----------
+            # === REVIEW NEW READINGS ===
+            st.markdown('<div class="section-header">REVIEW NEW READINGS</div>', unsafe_allow_html=True)
 
-            # === LEFT COLUMN: REVIEW NEW READINGS ===
-            with left_col:
-                st.markdown('<div class="section-header">REVIEW NEW READINGS</div>', unsafe_allow_html=True)
+            flats = load_flat_registry()
+            flat_by_meter = {f.get("meter_id"): f for f in flats if f.get("meter_id")}
+            # Initialize session state for approved readings if not present
+            if "approved_readings" not in st.session_state:
+                st.session_state.approved_readings = set()
 
-                flats = load_flat_registry()
-                flat_by_meter = {f.get("meter_id"): f for f in flats if f.get("meter_id")}
-                # Initialize session state for approved readings if not present
-                if "approved_readings" not in st.session_state:
-                    st.session_state.approved_readings = set()
+            # Filter out readings that have been approved in this session
+            display_readings = [r for r in pending_readings if r['id'] not in st.session_state.approved_readings]
 
-                # Filter out readings that have been approved in this session
-                display_readings = [r for r in pending_readings if r['id'] not in st.session_state.approved_readings]
-
-                if display_readings:
-                    st.info(f"📝 Found {len(display_readings)} new readings to review")
-                    
-                    # Table Header
-                    h1, h2, h3, h4, h5, h6, h7, h8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
-                    h1.markdown("**Unit ID**")
-                    h2.markdown("**Flat**")
-                    h3.markdown("**Floor**")
-                    h4.markdown("**Client Name**")
-                    h5.markdown("**Meter ID**")
-                    h6.markdown("**Reading**")
-                    h7.markdown("**Est. (₹)**")
-                    h8.markdown("**Actions**")
-                    st.markdown("<hr style='margin: 5px 0;'>", unsafe_allow_html=True)
-
-                    for i, r in enumerate(display_readings[:5]):  # Show top 5
-                        c1, c2, c3, c4, c5, c6, c7, c8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
-
-                        meter_id = r.get("meter_id")
-                        
-                        # Try to get metadata from reading object first (new schema), then fallback to registry
-                        unit_id = r.get("unit_id") or flat_by_meter.get(meter_id, {}).get("unit_id", "-")
-                        flat_no = r.get("flat_no") or flat_by_meter.get(meter_id, {}).get("flat_no", "-")
-                        floor = r.get("floor") or flat_by_meter.get(meter_id, {}).get("floor", "-")
-                        client_name = r.get("client_name") or flat_by_meter.get(meter_id, {}).get("client_name", "-")
-                        
-                        reading_val = r.get("reading_value")
-                        
-                        # Calculate estimated bill (simple logic)
-                        prev_reading = 0 # TODO: Fetch previous reading
-                        usage = reading_val - prev_reading if reading_val else 0
-                        energy_amount = (usage or 0) * 7.5  # Approx rate
-
-                        with c1:
-                            st.write(str(unit_id))
-                        with c2:
-                            st.write(str(flat_no))
-                        with c3:
-                            st.write(str(floor))
-                        with c4:
-                            st.write(str(client_name))
-                        with c5:
-                            st.write(str(meter_id))
-                        with c6:
-                            st.write(f"{reading_val}")
-                        with c7:
-                            st.write(f"₹{energy_amount:.0f}")
-
-                        with c8:
-                            b1, b2 = st.columns(2)
-                            with b1:
-                                if st.button("APPROVE", key=f"app_{i}", type="primary", use_container_width=True):
-                                    st.session_state["fetched_reading"] = r
-                                    st.session_state["fetched_meter_id"] = r["meter_id"]
-                                    # Add to approved set to hide from list
-                                    st.session_state.approved_readings.add(r['id'])
-                                    st.success(f"Approved {meter_id}")
-                                    st.rerun()
-                            with b2:
-                                if st.button("REJECT", key=f"rej_{i}", type="secondary", use_container_width=True):
-                                    if db.delete_reading(r['id']):
-                                        st.warning(f"Rejected and deleted reading for {meter_id}")
-                                        st.rerun()
-                                    else:
-                                        st.error("Failed to delete reading")
-                else:
-                    st.info("No new readings to review.")
-                    
-                if len(display_readings) > 5:
-                    if st.button(" View All Readings "):
-                        pass
-
-            # === RIGHT COLUMN: ACTIONS & STATUS ===
-            with right_col:
-                # QUICK ACTIONS
-                st.markdown('<div class="section-header">QUICK ACTIONS</div>', unsafe_allow_html=True)
+            if display_readings:
+                st.info(f"📝 Found {len(display_readings)} new readings to review")
                 
+                # Table Header
+                h1, h2, h3, h4, h5, h6, h7, h8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
+                h1.markdown("**Unit ID**")
+                h2.markdown("**Flat**")
+                h3.markdown("**Floor**")
+                h4.markdown("**Client Name**")
+                h5.markdown("**Meter ID**")
+                h6.markdown("**Reading**")
+                h7.markdown("**Est. (₹)**")
+                h8.markdown("**Actions**")
+                st.markdown("<hr style='margin: 5px 0;'>", unsafe_allow_html=True)
 
+                for i, r in enumerate(display_readings[:5]):  # Show top 5
+                    c1, c2, c3, c4, c5, c6, c7, c8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
+
+                    meter_id = r.get("meter_id")
+                    
+                    # Try to get metadata from reading object first (new schema), then fallback to registry
+                    unit_id = r.get("unit_id") or flat_by_meter.get(meter_id, {}).get("unit_id", "-")
+                    flat_no = r.get("flat_no") or flat_by_meter.get(meter_id, {}).get("flat_no", "-")
+                    floor = r.get("floor") or flat_by_meter.get(meter_id, {}).get("floor", "-")
+                    client_name = r.get("client_name") or flat_by_meter.get(meter_id, {}).get("client_name", "-")
+                    
+                    reading_val = r.get("reading_value")
+                    
+                    # Calculate estimated bill (simple logic)
+                    prev_reading = 0 # TODO: Fetch previous reading
+                    usage = reading_val - prev_reading if reading_val else 0
+                    energy_amount = (usage or 0) * 7.5  # Approx rate
+
+                    with c1:
+                        st.write(str(unit_id))
+                    with c2:
+                        st.write(str(flat_no))
+                    with c3:
+                        st.write(str(floor))
+                    with c4:
+                        st.write(str(client_name))
+                    with c5:
+                        st.write(str(meter_id))
+                    with c6:
+                        st.write(f"{reading_val}")
+                    with c7:
+                        st.write(f"₹{energy_amount:.0f}")
+
+                    with c8:
+                        b1, b2 = st.columns(2)
+                        with b1:
+                            if st.button("APPROVE", key=f"app_{i}", type="primary", use_container_width=True):
+                                st.session_state["fetched_reading"] = r
+                                st.session_state["fetched_meter_id"] = r["meter_id"]
+                                # Add to approved set to hide from list
+                                st.session_state.approved_readings.add(r['id'])
+                                st.success(f"Approved {meter_id}")
+                                st.rerun()
+                        with b2:
+                            if st.button("REJECT", key=f"rej_{i}", type="secondary", use_container_width=True):
+                                if db.delete_reading(r['id']):
+                                    st.warning(f"Rejected and deleted reading for {meter_id}")
+                                    st.rerun()
+                                else:
+                                    st.error("Failed to delete reading")
+            else:
+                st.info("No new readings to review.")
+                
+            if len(display_readings) > 5:
+                if st.button(" View All Readings "):
+                    pass
+
+            # === QUICK ACTIONS & STATUS (Below Review Readings Table) ===
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # QUICK ACTIONS
+            st.markdown('<div class="section-header">QUICK ACTIONS</div>', unsafe_allow_html=True)
+            
+            action_col1, action_col2, action_col3 = st.columns(3)
+            
+            with action_col1:
                 if st.button(" Generate Monthly Bills ", use_container_width=True, type="primary"):
                     st.session_state["selected_admin_tab"] = "generate"
                     st.rerun()
-                    
+            
+            with action_col2:
                 if st.button(" View Payments ", use_container_width=True, type="primary"):
                     st.session_state["selected_admin_tab"] = "payments"
                     st.rerun()
-                    
+            
+            with action_col3:
                 if st.button(" Print Reports ", use_container_width=True, type="primary"):
                     st.session_state["selected_admin_tab"] = "analytics"
                     st.rerun()
 
-                st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
 
-                # SIMPLE STATUS BOX
-                st.markdown('<div class="section-header">SIMPLE STATUS BOX</div>', unsafe_allow_html=True)
-                
-                st.markdown(f"""
-                <div class="sb">
-                    <div class="si"><b>Payments:</b> ₹{total_paid:,.0f}</div>
-                    <div class="si"><b>Outstanding:</b> ₹{total_outstanding:,.0f}</div>
-                    <div class="si"><b>Overdue:</b> {overdue}</div>
-                </div>
-                """, unsafe_allow_html=True)
+            # SIMPLE STATUS BOX
+            st.markdown('<div class="section-header">SIMPLE STATUS BOX</div>', unsafe_allow_html=True)
+            
+            st.markdown(f"""
+            <div class="sb">
+                <div class="si"><b>Payments:</b> ₹{total_paid:,.0f}</div>
+                <div class="si"><b>Outstanding:</b> ₹{total_outstanding:,.0f}</div>
+                <div class="si"><b>Overdue:</b> {overdue}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
             st.markdown("---")
 
