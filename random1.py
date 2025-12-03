@@ -298,21 +298,42 @@ elif st.session_state.user_role == "field_engineer":
     with fe_tab1:
         st.header("➕ Add New Meter Reading")
 
-        flats = load_flat_registry()
+        # Fetch active meters from DB instead of static JSON
+        flats = db.get_active_meters()
+        
         if not flats:
-            st.warning("Flat registry not found. Please run the import_registry script to load flats from the Excel file.")
+            st.warning("No active meters found in the database. Please run the import script.")
         else:
-            flat_options = [
-                f"[{f.get('unit_id', '?')}] Flat {f.get('flat_no', '')} (Floor: {f.get('floor', '')}) – {f.get('client_name', '')}"
-                for f in flats
-            ]
+            # Sort flats by flat_no for better UX
+            try:
+                flats.sort(key=lambda x: x.get('flat_no', ''))
+            except:
+                pass # Best effort sort
+
+            # Get unique flat numbers
+            flat_nos = sorted(list(set(f.get('flat_no', '') for f in flats if f.get('flat_no'))))
+            
+            st.subheader("Select Flat and Enter Reading")
+            
+            # First Dropdown: Flat No
+            selected_flat_no = st.selectbox("🏢 Select Flat No", flat_nos)
+            
+            # Filter flats based on selected flat number
+            available_floors_data = [f for f in flats if f.get('flat_no') == selected_flat_no]
+            
+            # Get unique floors for this flat
+            floors = sorted(list(set(f.get('floor', '') for f in available_floors_data if f.get('floor'))))
+            
+            # Second Dropdown: Floor
+            selected_floor = st.selectbox("Select Floor", floors)
+            
+            # Find the specific flat entry
+            selected_flat = next(
+                (f for f in available_floors_data if f.get('floor') == selected_floor), 
+                available_floors_data[0] if available_floors_data else {}
+            )
 
             with st.form("add_reading_fe", clear_on_submit=True):
-                st.subheader("Select Flat and Enter Reading")
-
-                selected_label = st.selectbox("🏢 Flat / Unit", flat_options, index=0)
-                selected_flat = flats[flat_options.index(selected_label)]
-
                 col_meta1, col_meta2 = st.columns(2)
                 with col_meta1:
                     st.text_input("Unit ID", value=selected_flat.get("unit_id", ""), disabled=True)
@@ -343,33 +364,47 @@ elif st.session_state.user_role == "field_engineer":
                             # Use Unit ID as the primary customer identifier if available
                             customer_id = f"UNIT-{unit_id}" if unit_id else f"FLAT-{selected_flat.get('flat_no', '')}"
 
-                            reading_data = {
-                                "meter_id": meter_id,
-                                "customer_id": customer_id,
-                                "reading_value": reading_value,
-                                "reading_date": reading_date.strftime("%Y-%m-%d"),
-                                "unit_id": unit_id,
-                                "flat_no": selected_flat.get("flat_no", ""),
-                                "floor": selected_flat.get("floor", ""),
-                                "type": selected_flat.get("type", ""),
-                                "client_name": selected_flat.get("client_name", ""),
-                                "created_at": datetime.now().isoformat()
-                            }
-
-                            result = db.insert_meter_reading(reading_data)
+                            # Check if this is an update to an initial reading
+                            if selected_flat.get('status') == 'initial':
+                                # UPDATE existing initial reading
+                                update_data = {
+                                    "reading_value": reading_value,
+                                    "reading_date": reading_date.strftime("%Y-%m-%d"),
+                                    "status": "active", # Change status from initial to active
+                                    "submitted_at": datetime.now().isoformat()
+                                }
+                                result = db.update_meter_reading(selected_flat['id'], update_data)
+                                action_type = "updated"
+                            else:
+                                # INSERT new reading
+                                reading_data = {
+                                    "meter_id": meter_id,
+                                    "customer_id": customer_id,
+                                    "reading_value": reading_value,
+                                    "reading_date": reading_date.strftime("%Y-%m-%d"),
+                                    "unit_id": unit_id,
+                                    "flat_no": selected_flat.get("flat_no", ""),
+                                    "floor": selected_flat.get("floor", ""),
+                                    "type": selected_flat.get("type", ""),
+                                    "client_name": selected_flat.get("client_name", ""),
+                                    "created_at": datetime.now().isoformat(),
+                                    "status": "active"
+                                }
+                                result = db.insert_meter_reading(reading_data)
+                                action_type = "added"
 
                             if result:
                                 st.success(
-                                    f"✅ Reading added successfully! {reading_value} kWh recorded for Flat {selected_flat.get('flat_no', '')} on {reading_date}"
+                                    f"✅ Reading {action_type} successfully! {reading_value} kWh recorded for Flat {selected_flat.get('flat_no', '')} on {reading_date}"
                                 )
                                 st.balloons()
                                 st.cache_resource.clear()
                                 st.cache_data.clear()
                                 st.rerun()
                             else:
-                                st.error("❌ Failed to add reading to database")
+                                st.error(f"❌ Failed to {action_type} reading in database")
                         except Exception as e:
-                            st.error(f"❌ Error adding reading: {str(e)}")
+                            st.error(f"❌ Error processing reading: {str(e)}")
                     else:
                         st.warning("⚠️ Please enter a valid reading value greater than 0")
         
