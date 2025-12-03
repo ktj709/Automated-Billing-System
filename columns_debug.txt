@@ -1,0 +1,14 @@
+0: Unit_ID
+1: Flat no
+2: Floor
+3: Type
+4: Billing_Entity
+5: Meter No.
+6: Units_Consumed
+7: Rate_Per_Unit
+8: Usage_Charges
+9: Fixed_Charges
+10: Total_Bill
+
+FIRST ROW:
+['4BHK-C8-SF', 'C8', 'SF', '4BHK', 'S.Jora Singh and S. Bahadur Singh', np.float64(21129958.0), np.float64(0.0), np.float64(7.5), np.float64(nan), np.float64(1890.0), np.float64(nan)]

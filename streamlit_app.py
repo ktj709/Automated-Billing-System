@@ -298,21 +298,42 @@ elif st.session_state.user_role == "field_engineer":
     with fe_tab1:
         st.header("➕ Add New Meter Reading")
 
-        flats = load_flat_registry()
+        # Fetch active meters from DB instead of static JSON
+        flats = db.get_active_meters()
+        
         if not flats:
-            st.warning("Flat registry not found. Please run the import_registry script to load flats from the Excel file.")
+            st.warning("No active meters found in the database. Please run the import script.")
         else:
-            flat_options = [
-                f"[{f.get('unit_id', '?')}] Flat {f.get('flat_no', '')} (Floor: {f.get('floor', '')}) – {f.get('client_name', '')}"
-                for f in flats
-            ]
+            # Sort flats by flat_no for better UX
+            try:
+                flats.sort(key=lambda x: x.get('flat_no', ''))
+            except:
+                pass # Best effort sort
+
+            # Get unique flat numbers
+            flat_nos = sorted(list(set(f.get('flat_no', '') for f in flats if f.get('flat_no'))))
+            
+            st.subheader("Select Flat and Enter Reading")
+            
+            # First Dropdown: Flat No
+            selected_flat_no = st.selectbox("🏢 Select Flat No", flat_nos)
+            
+            # Filter flats based on selected flat number
+            available_floors_data = [f for f in flats if f.get('flat_no') == selected_flat_no]
+            
+            # Get unique floors for this flat
+            floors = sorted(list(set(f.get('floor', '') for f in available_floors_data if f.get('floor'))))
+            
+            # Second Dropdown: Floor
+            selected_floor = st.selectbox("Select Floor", floors)
+            
+            # Find the specific flat entry
+            selected_flat = next(
+                (f for f in available_floors_data if f.get('floor') == selected_floor), 
+                available_floors_data[0] if available_floors_data else {}
+            )
 
             with st.form("add_reading_fe", clear_on_submit=True):
-                st.subheader("Select Flat and Enter Reading")
-
-                selected_label = st.selectbox("🏢 Flat / Unit", flat_options, index=0)
-                selected_flat = flats[flat_options.index(selected_label)]
-
                 col_meta1, col_meta2 = st.columns(2)
                 with col_meta1:
                     st.text_input("Unit ID", value=selected_flat.get("unit_id", ""), disabled=True)
@@ -329,7 +350,10 @@ elif st.session_state.user_role == "field_engineer":
                     help="Enter the current meter reading for this flat"
                 )
                 reading_date = st.date_input("📅 Reading Date", value=datetime.now())
-
+                
+                # Photo Upload
+                uploaded_file = st.file_uploader("📸 Upload Meter Photo", type=['png', 'jpg', 'jpeg'])
+                
                 col1, col2 = st.columns(2)
                 with col1:
                     submit_button = st.form_submit_button("✅ Submit Reading", type="primary", use_container_width=True)
@@ -343,33 +367,76 @@ elif st.session_state.user_role == "field_engineer":
                             # Use Unit ID as the primary customer identifier if available
                             customer_id = f"UNIT-{unit_id}" if unit_id else f"FLAT-{selected_flat.get('flat_no', '')}"
 
-                            reading_data = {
-                                "meter_id": meter_id,
-                                "customer_id": customer_id,
-                                "reading_value": reading_value,
-                                "reading_date": reading_date.strftime("%Y-%m-%d"),
-                                "unit_id": unit_id,
-                                "flat_no": selected_flat.get("flat_no", ""),
-                                "floor": selected_flat.get("floor", ""),
-                                "type": selected_flat.get("type", ""),
-                                "client_name": selected_flat.get("client_name", ""),
-                                "created_at": datetime.now().isoformat()
-                            }
+                            # Handle Photo Upload
+                            meter_image_path = None
+                            if uploaded_file is not None:
+                                try:
+                                    # Create directory if it doesn't exist
+                                    save_dir = Path("data/meter_photos")
+                                    save_dir.mkdir(parents=True, exist_ok=True)
+                                    
+                                    # Generate unique filename
+                                    import uuid
+                                    file_ext = uploaded_file.name.split('.')[-1]
+                                    filename = f"{meter_id}_{reading_date.strftime('%Y%m%d')}_{str(uuid.uuid4())[:8]}.{file_ext}"
+                                    save_path = save_dir / filename
+                                    
+                                    # Save file
+                                    with open(save_path, "wb") as f:
+                                        f.write(uploaded_file.getbuffer())
+                                    
+                                    meter_image_path = str(save_path)
+                                    st.success(f"📸 Photo saved: {filename}")
+                                except Exception as e:
+                                    st.error(f"❌ Error saving photo: {e}")
 
-                            result = db.insert_meter_reading(reading_data)
+                            # Check if this is an update to an initial reading
+                            if selected_flat.get('status') == 'initial':
+                                # UPDATE existing initial reading
+                                update_data = {
+                                    "reading_value": reading_value,
+                                    "reading_date": reading_date.strftime("%Y-%m-%d"),
+                                    "status": "active", # Change status from initial to active
+                                    "submitted_at": datetime.now().isoformat()
+                                }
+                                if meter_image_path:
+                                    update_data["meter_image_path"] = meter_image_path
+                                    
+                                result = db.update_meter_reading(selected_flat['id'], update_data)
+                                action_type = "updated"
+                            else:
+                                # INSERT new reading
+                                reading_data = {
+                                    "meter_id": meter_id,
+                                    "customer_id": customer_id,
+                                    "reading_value": reading_value,
+                                    "reading_date": reading_date.strftime("%Y-%m-%d"),
+                                    "unit_id": unit_id,
+                                    "flat_no": selected_flat.get("flat_no", ""),
+                                    "floor": selected_flat.get("floor", ""),
+                                    "type": selected_flat.get("type", ""),
+                                    "client_name": selected_flat.get("client_name", ""),
+                                    "created_at": datetime.now().isoformat(),
+                                    "status": "active"
+                                }
+                                if meter_image_path:
+                                    reading_data["meter_image_path"] = meter_image_path
+                                    
+                                result = db.insert_meter_reading(reading_data)
+                                action_type = "added"
 
                             if result:
                                 st.success(
-                                    f"✅ Reading added successfully! {reading_value} kWh recorded for Flat {selected_flat.get('flat_no', '')} on {reading_date}"
+                                    f"✅ Reading {action_type} successfully! {reading_value} kWh recorded for Flat {selected_flat.get('flat_no', '')} on {reading_date}"
                                 )
                                 st.balloons()
                                 st.cache_resource.clear()
                                 st.cache_data.clear()
                                 st.rerun()
                             else:
-                                st.error("❌ Failed to add reading to database")
+                                st.error(f"❌ Failed to {action_type} reading in database")
                         except Exception as e:
-                            st.error(f"❌ Error adding reading: {str(e)}")
+                            st.error(f"❌ Error processing reading: {str(e)}")
                     else:
                         st.warning("⚠️ Please enter a valid reading value greater than 0")
         
@@ -702,124 +769,126 @@ else:  # admin role
 
             st.markdown("---")
 
-            # ---------- MAIN CONTENT (SPLIT VIEW) ----------
-            left_col, right_col = st.columns([2, 1])
+            # ---------- MAIN CONTENT ----------
+            # === REVIEW NEW READINGS ===
+            st.markdown('<div class="section-header">REVIEW NEW READINGS</div>', unsafe_allow_html=True)
 
-            # === LEFT COLUMN: REVIEW NEW READINGS ===
-            with left_col:
-                st.markdown('<div class="section-header">REVIEW NEW READINGS</div>', unsafe_allow_html=True)
+            flats = load_flat_registry()
+            flat_by_meter = {f.get("meter_id"): f for f in flats if f.get("meter_id")}
+            # Initialize session state for approved readings if not present
+            if "approved_readings" not in st.session_state:
+                st.session_state.approved_readings = set()
 
-                flats = load_flat_registry()
-                flat_by_meter = {f.get("meter_id"): f for f in flats if f.get("meter_id")}
-                # Initialize session state for approved readings if not present
-                if "approved_readings" not in st.session_state:
-                    st.session_state.approved_readings = set()
+            # Filter out readings that have been approved in this session
+            display_readings = [r for r in pending_readings if r['id'] not in st.session_state.approved_readings]
 
-                # Filter out readings that have been approved in this session
-                display_readings = [r for r in pending_readings if r['id'] not in st.session_state.approved_readings]
-
-                if display_readings:
-                    st.info(f"📝 Found {len(display_readings)} new readings to review")
-                    
-                    # Table Header
-                    h1, h2, h3, h4, h5, h6, h7, h8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
-                    h1.markdown("**Unit ID**")
-                    h2.markdown("**Flat**")
-                    h3.markdown("**Floor**")
-                    h4.markdown("**Client Name**")
-                    h5.markdown("**Meter ID**")
-                    h6.markdown("**Reading**")
-                    h7.markdown("**Est. (₹)**")
-                    h8.markdown("**Actions**")
-                    st.markdown("<hr style='margin: 5px 0;'>", unsafe_allow_html=True)
-
-                    for i, r in enumerate(display_readings[:5]):  # Show top 5
-                        c1, c2, c3, c4, c5, c6, c7, c8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
-
-                        meter_id = r.get("meter_id")
-                        
-                        # Try to get metadata from reading object first (new schema), then fallback to registry
-                        unit_id = r.get("unit_id") or flat_by_meter.get(meter_id, {}).get("unit_id", "-")
-                        flat_no = r.get("flat_no") or flat_by_meter.get(meter_id, {}).get("flat_no", "-")
-                        floor = r.get("floor") or flat_by_meter.get(meter_id, {}).get("floor", "-")
-                        client_name = r.get("client_name") or flat_by_meter.get(meter_id, {}).get("client_name", "-")
-                        
-                        reading_val = r.get("reading_value")
-                        
-                        # Calculate estimated bill (simple logic)
-                        prev_reading = 0 # TODO: Fetch previous reading
-                        usage = reading_val - prev_reading if reading_val else 0
-                        energy_amount = (usage or 0) * 7.5  # Approx rate
-
-                        with c1:
-                            st.write(str(unit_id))
-                        with c2:
-                            st.write(str(flat_no))
-                        with c3:
-                            st.write(str(floor))
-                        with c4:
-                            st.write(str(client_name))
-                        with c5:
-                            st.write(str(meter_id))
-                        with c6:
-                            st.write(f"{reading_val}")
-                        with c7:
-                            st.write(f"₹{energy_amount:.0f}")
-
-                        with c8:
-                            b1, b2 = st.columns(2)
-                            with b1:
-                                if st.button("APPROVE", key=f"app_{i}", type="primary", use_container_width=True):
-                                    st.session_state["fetched_reading"] = r
-                                    st.session_state["fetched_meter_id"] = r["meter_id"]
-                                    # Add to approved set to hide from list
-                                    st.session_state.approved_readings.add(r['id'])
-                                    st.success(f"Approved {meter_id}")
-                                    st.rerun()
-                            with b2:
-                                if st.button("REJECT", key=f"rej_{i}", type="secondary", use_container_width=True):
-                                    if db.delete_reading(r['id']):
-                                        st.warning(f"Rejected and deleted reading for {meter_id}")
-                                        st.rerun()
-                                    else:
-                                        st.error("Failed to delete reading")
-                else:
-                    st.info("No new readings to review.")
-                    
-                if len(display_readings) > 5:
-                    if st.button(" View All Readings "):
-                        pass
-
-            # === RIGHT COLUMN: ACTIONS & STATUS ===
-            with right_col:
-                # QUICK ACTIONS
-                st.markdown('<div class="section-header">QUICK ACTIONS</div>', unsafe_allow_html=True)
+            if display_readings:
+                st.info(f"📝 Found {len(display_readings)} new readings to review")
                 
+                # Table Header
+                h1, h2, h3, h4, h5, h6, h7, h8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
+                h1.markdown("**Unit ID**")
+                h2.markdown("**Flat**")
+                h3.markdown("**Floor**")
+                h4.markdown("**Client Name**")
+                h5.markdown("**Meter ID**")
+                h6.markdown("**Reading**")
+                h7.markdown("**Est. (₹)**")
+                h8.markdown("**Actions**")
+                st.markdown("<hr style='margin: 5px 0;'>", unsafe_allow_html=True)
 
+                for i, r in enumerate(display_readings[:5]):  # Show top 5
+                    c1, c2, c3, c4, c5, c6, c7, c8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
+
+                    meter_id = r.get("meter_id")
+                    
+                    # Try to get metadata from reading object first (new schema), then fallback to registry
+                    unit_id = r.get("unit_id") or flat_by_meter.get(meter_id, {}).get("unit_id", "-")
+                    flat_no = r.get("flat_no") or flat_by_meter.get(meter_id, {}).get("flat_no", "-")
+                    floor = r.get("floor") or flat_by_meter.get(meter_id, {}).get("floor", "-")
+                    client_name = r.get("client_name") or flat_by_meter.get(meter_id, {}).get("client_name", "-")
+                    
+                    reading_val = r.get("reading_value")
+                    
+                    # Calculate estimated bill (simple logic)
+                    prev_reading = 0 # TODO: Fetch previous reading
+                    usage = reading_val - prev_reading if reading_val else 0
+                    energy_amount = (usage or 0) * 7.5  # Approx rate
+
+                    with c1:
+                        st.write(str(unit_id))
+                    with c2:
+                        st.write(str(flat_no))
+                    with c3:
+                        st.write(str(floor))
+                    with c4:
+                        st.write(str(client_name))
+                    with c5:
+                        st.write(str(meter_id))
+                    with c6:
+                        st.write(f"{reading_val}")
+                    with c7:
+                        st.write(f"₹{energy_amount:.0f}")
+
+                    with c8:
+                        b1, b2 = st.columns(2)
+                        with b1:
+                            if st.button("APPROVE", key=f"app_{i}", type="primary", use_container_width=True):
+                                st.session_state["fetched_reading"] = r
+                                st.session_state["fetched_meter_id"] = r["meter_id"]
+                                # Add to approved set to hide from list
+                                st.session_state.approved_readings.add(r['id'])
+                                st.success(f"Approved {meter_id}")
+                                st.rerun()
+                        with b2:
+                            if st.button("REJECT", key=f"rej_{i}", type="secondary", use_container_width=True):
+                                if db.delete_reading(r['id']):
+                                    st.warning(f"Rejected and deleted reading for {meter_id}")
+                                    st.rerun()
+                                else:
+                                    st.error("Failed to delete reading")
+            else:
+                st.info("No new readings to review.")
+                
+            if len(display_readings) > 5:
+                if st.button(" View All Readings "):
+                    pass
+
+            # === QUICK ACTIONS & STATUS (Below Review Readings Table) ===
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # QUICK ACTIONS
+            st.markdown('<div class="section-header">QUICK ACTIONS</div>', unsafe_allow_html=True)
+            
+            action_col1, action_col2, action_col3 = st.columns(3)
+            
+            with action_col1:
                 if st.button(" Generate Monthly Bills ", use_container_width=True, type="primary"):
                     st.session_state["selected_admin_tab"] = "generate"
                     st.rerun()
-                    
+            
+            with action_col2:
                 if st.button(" View Payments ", use_container_width=True, type="primary"):
                     st.session_state["selected_admin_tab"] = "payments"
                     st.rerun()
-                    
+            
+            with action_col3:
                 if st.button(" Print Reports ", use_container_width=True, type="primary"):
                     st.session_state["selected_admin_tab"] = "analytics"
                     st.rerun()
 
-                st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
 
-                # SIMPLE STATUS BOX
-                st.markdown('<div class="section-header">SIMPLE STATUS BOX</div>', unsafe_allow_html=True)
-                
-                st.markdown(f"""
-                <div class="sb">
-                    <div class="si"><b>Payments:</b> ₹{total_paid:,.0f}</div>
-                    <div class="si"><b>Outstanding:</b> ₹{total_outstanding:,.0f}</div>
-                    <div class="si"><b>Overdue:</b> {overdue}</div>
-                </div>
-                """, unsafe_allow_html=True)
+            # SIMPLE STATUS BOX
+            st.markdown('<div class="section-header">SIMPLE STATUS BOX</div>', unsafe_allow_html=True)
+            
+            st.markdown(f"""
+            <div class="sb">
+                <div class="si"><b>Payments:</b> ₹{total_paid:,.0f}</div>
+                <div class="si"><b>Outstanding:</b> ₹{total_outstanding:,.0f}</div>
+                <div class="si"><b>Overdue:</b> {overdue}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
             st.markdown("---")
 

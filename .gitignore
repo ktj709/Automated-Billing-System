@@ -41,3 +41,7 @@ verify_token.py
 dist/
 build/
 *.egg-info/
+
+.gemini/
+
+node_modules/

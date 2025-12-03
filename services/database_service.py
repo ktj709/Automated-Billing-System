@@ -422,27 +422,51 @@ class DatabaseService:
                 return dict(result)
     
     def insert_meter_reading(self, reading_data: Dict) -> Dict:
-        """Insert a new meter reading"""
-        if self.use_supabase:
-            response = self.supabase.table('meter_readings').insert(reading_data).execute()
-            return response.data[0] if response.data else {}
-        
+        """Insert a new meter reading (field engineer submission)"""
+        logger.debug(f"Inserting meter reading for meter {reading_data.get('meter_id')}")
+        try:
+            if self.use_supabase:
+                response = self.supabase.table('meter_readings').insert(reading_data).execute()
+                result = response.data[0] if response.data else {}
+                logger.info(f"Inserted reading ID {result.get('id')} for meter {reading_data.get('meter_id')}")
+                return result
+        except Exception as e:
+            logger.error(f"Error inserting meter reading: {e}")
+            raise
         query = """
             INSERT INTO meter_readings (
-                meter_id, customer_id, reading_value, 
-                reading_date, created_at
+                meter_id, engineer_id, reading_value, unit, reading_date, submitted_at, status, meter_image_path
             ) VALUES (
-                %(meter_id)s, %(customer_id)s, %(reading_value)s,
-                %(reading_date)s, %(created_at)s
+                %(meter_id)s, %(engineer_id)s, %(reading_value)s, %(unit)s, %(reading_date)s, %(submitted_at)s, %(status)s, %(meter_image_path)s
             ) RETURNING *
         """
         
+        # Ensure meter_image_path is in data
+        if 'meter_image_path' not in reading_data:
+            reading_data['meter_image_path'] = None
+            
         with self.get_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(query, reading_data)
-                result = cur.fetchone()
-                conn.commit()
-                return dict(result)
+                try:
+                    cur.execute(query, reading_data)
+                    result = cur.fetchone()
+                    conn.commit()
+                    return dict(result)
+                except Exception as e:
+                    # Fallback if column doesn't exist
+                    logger.warning(f"Failed to insert with image path, retrying without: {e}")
+                    conn.rollback()
+                    query_fallback = """
+                        INSERT INTO meter_readings (
+                            meter_id, engineer_id, reading_value, unit, reading_date, submitted_at, status
+                        ) VALUES (
+                            %(meter_id)s, %(engineer_id)s, %(reading_value)s, %(unit)s, %(reading_date)s, %(submitted_at)s, %(status)s
+                        ) RETURNING *
+                    """
+                    cur.execute(query_fallback, reading_data)
+                    result = cur.fetchone()
+                    conn.commit()
+                    return dict(result)
     
     @retry(max_attempts=3, delay=1, backoff=2, exceptions=(Exception,))
     def get_unbilled_readings(self, limit: int = 100) -> List[Dict]:
@@ -539,19 +563,47 @@ class DatabaseService:
             logger.error(f"Error getting unbilled count: {e}")
             return 0
 
-    def delete_reading(self, reading_id: int) -> bool:
-        """Delete a meter reading by ID"""
-        logger.info(f"Deleting reading {reading_id}")
+    def get_active_meters(self) -> List[Dict]:
+        """Get list of active meters/flats from the database (registry)"""
+        logger.debug("Fetching active meters registry")
         try:
-            if self.supabase:
-                self.supabase.table('meter_readings').delete().eq('id', reading_id).execute()
-                return True
-            elif self.conn:
-                with self.conn.cursor() as cur:
-                    cur.execute("DELETE FROM meter_readings WHERE id = %s", (reading_id,))
-                    self.conn.commit()
-                return True
-            return False
+            if self.use_supabase:
+                # Fetch all readings that act as registry entries (could be 'initial' status or just unique meters)
+                # Since we imported master data as readings, we can fetch all unique meter_ids
+                # But to get full details (flat, floor, etc), we should fetch the latest entry for each meter
+                
+                # For now, fetching all 'initial' readings is a good proxy for the registry
+                response = self.supabase.table('meter_readings')\
+                    .select('*')\
+                    .eq('status', 'initial')\
+                    .execute()
+                
+                if response.data:
+                    logger.info(f"Retrieved {len(response.data)} active meters from registry")
+                    return response.data
+                
+                # Fallback: if no 'initial' readings, fetch distinct meters (this is harder with simple select)
+                # So we rely on the import script having created 'initial' rows
+                return []
+                
         except Exception as e:
-            logger.error(f"Error deleting reading: {e}")
-            return False
+            logger.error(f"Error fetching active meters: {e}")
+            return []
+        return []
+
+    def update_meter_reading(self, reading_id: int, reading_data: Dict) -> Dict:
+        """Update an existing meter reading"""
+        logger.debug(f"Updating reading {reading_id}")
+        try:
+            if self.use_supabase:
+                response = self.supabase.table('meter_readings')\
+                    .update(reading_data)\
+                    .eq('id', reading_id)\
+                    .execute()
+                result = response.data[0] if response.data else {}
+                logger.info(f"Updated reading {reading_id}")
+                return result
+        except Exception as e:
+            logger.error(f"Error updating reading {reading_id}: {e}")
+            raise
+        return {}
