@@ -350,7 +350,10 @@ elif st.session_state.user_role == "field_engineer":
                     help="Enter the current meter reading for this flat"
                 )
                 reading_date = st.date_input("📅 Reading Date", value=datetime.now())
-
+                
+                # Photo Upload
+                uploaded_file = st.file_uploader("📸 Upload Meter Photo", type=['png', 'jpg', 'jpeg'])
+                
                 col1, col2 = st.columns(2)
                 with col1:
                     submit_button = st.form_submit_button("✅ Submit Reading", type="primary", use_container_width=True)
@@ -364,6 +367,29 @@ elif st.session_state.user_role == "field_engineer":
                             # Use Unit ID as the primary customer identifier if available
                             customer_id = f"UNIT-{unit_id}" if unit_id else f"FLAT-{selected_flat.get('flat_no', '')}"
 
+                            # Handle Photo Upload
+                            meter_image_path = None
+                            if uploaded_file is not None:
+                                try:
+                                    # Create directory if it doesn't exist
+                                    save_dir = Path("data/meter_photos")
+                                    save_dir.mkdir(parents=True, exist_ok=True)
+                                    
+                                    # Generate unique filename
+                                    import uuid
+                                    file_ext = uploaded_file.name.split('.')[-1]
+                                    filename = f"{meter_id}_{reading_date.strftime('%Y%m%d')}_{str(uuid.uuid4())[:8]}.{file_ext}"
+                                    save_path = save_dir / filename
+                                    
+                                    # Save file
+                                    with open(save_path, "wb") as f:
+                                        f.write(uploaded_file.getbuffer())
+                                    
+                                    meter_image_path = str(save_path)
+                                    st.success(f"📸 Photo saved: {filename}")
+                                except Exception as e:
+                                    st.error(f"❌ Error saving photo: {e}")
+
                             # Check if this is an update to an initial reading
                             if selected_flat.get('status') == 'initial':
                                 # UPDATE existing initial reading
@@ -373,6 +399,9 @@ elif st.session_state.user_role == "field_engineer":
                                     "status": "active", # Change status from initial to active
                                     "submitted_at": datetime.now().isoformat()
                                 }
+                                if meter_image_path:
+                                    update_data["meter_image_path"] = meter_image_path
+                                    
                                 result = db.update_meter_reading(selected_flat['id'], update_data)
                                 action_type = "updated"
                             else:
@@ -390,6 +419,9 @@ elif st.session_state.user_role == "field_engineer":
                                     "created_at": datetime.now().isoformat(),
                                     "status": "active"
                                 }
+                                if meter_image_path:
+                                    reading_data["meter_image_path"] = meter_image_path
+                                    
                                 result = db.insert_meter_reading(reading_data)
                                 action_type = "added"
 
@@ -754,19 +786,20 @@ else:  # admin role
                 st.info(f"📝 Found {len(display_readings)} new readings to review")
                 
                 # Table Header
-                h1, h2, h3, h4, h5, h6, h7, h8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
+                h1, h2, h3, h4, h5, h6, h7, h8, h9 = st.columns([1, 0.7, 0.7, 1.3, 0.9, 0.9, 1, 1, 1.3])
                 h1.markdown("**Unit ID**")
                 h2.markdown("**Flat**")
                 h3.markdown("**Floor**")
                 h4.markdown("**Client Name**")
                 h5.markdown("**Meter ID**")
                 h6.markdown("**Reading**")
-                h7.markdown("**Est. (₹)**")
-                h8.markdown("**Actions**")
+                h7.markdown("**Fixed (₹)**")
+                h8.markdown("**Est. (₹)**")
+                h9.markdown("**Actions**")
                 st.markdown("<hr style='margin: 5px 0;'>", unsafe_allow_html=True)
 
                 for i, r in enumerate(display_readings[:5]):  # Show top 5
-                    c1, c2, c3, c4, c5, c6, c7, c8 = st.columns([1.2, 0.8, 0.8, 1.5, 1, 1, 1, 1.5])
+                    c1, c2, c3, c4, c5, c6, c7, c8, c9 = st.columns([1, 0.7, 0.7, 1.3, 0.9, 0.9, 1, 1, 1.3])
 
                     meter_id = r.get("meter_id")
                     
@@ -778,10 +811,45 @@ else:  # admin role
                     
                     reading_val = r.get("reading_value")
                     
-                    # Calculate estimated bill (simple logic)
-                    prev_reading = 0 # TODO: Fetch previous reading
-                    usage = reading_val - prev_reading if reading_val else 0
-                    energy_amount = (usage or 0) * 7.5  # Approx rate
+                    # Get flat info for tariff calculation
+                    flat_info = next((f for f in flats if f.get('meter_id') == meter_id), {})
+                    tariff_type = flat_info.get('type', 'residential')
+                    
+                    # Calculate Fixed Charges
+                    try:
+                        tariff = TariffRules.get_tariff_by_type(tariff_type)
+                        fixed_charges = tariff.get("fixed_charges", {})
+                        connected_load = 5.0
+                        total_fixed = (
+                            fixed_charges.get("motor_charges", 0) +
+                            fixed_charges.get("common_area_maintenance", 0) +
+                            (fixed_charges.get("grid_charges_per_kw", 0) * connected_load)
+                        )
+                    except Exception:
+                        total_fixed = 0.0
+                    
+                    # Calculate estimated bill using TariffRules
+                    try:
+                        # Fetch previous reading
+                        history = db.get_historical_readings(meter_id, limit=2)
+                        prev_reading = 0
+                        if len(history) > 1:
+                            prev_reading = history[1]['reading_value']
+                        
+                        # Calculate consumption
+                        consumption = reading_val - prev_reading
+                        if consumption < 0:
+                            consumption = 0
+                        
+                        # Use TariffRules to calculate complete bill
+                        bill_calc = TariffRules.calculate_total_bill(
+                            consumption_kwh=consumption,
+                            connected_load_kw=connected_load,
+                            tariff_type=tariff_type
+                        )
+                        est_amount = bill_calc['amount_payable']
+                    except Exception:
+                        est_amount = 0.0
 
                     with c1:
                         st.write(str(unit_id))
@@ -796,9 +864,11 @@ else:  # admin role
                     with c6:
                         st.write(f"{reading_val}")
                     with c7:
-                        st.write(f"₹{energy_amount:.0f}")
-
+                        st.write(f"₹{total_fixed:,.0f}")
                     with c8:
+                        st.write(f"₹{est_amount:,.0f}")
+
+                    with c9:
                         b1, b2 = st.columns(2)
                         with b1:
                             if st.button("APPROVE", key=f"app_{i}", type="primary", use_container_width=True):
