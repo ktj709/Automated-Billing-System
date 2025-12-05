@@ -830,11 +830,18 @@ else:  # admin role
                     
                     # Calculate estimated bill using TariffRules
                     try:
-                        # Fetch previous reading
-                        history = db.get_historical_readings(meter_id, limit=2)
+                        # Fetch previous reading (excluding current one)
+                        history = db.get_historical_readings(meter_id, limit=10)
                         prev_reading = 0
-                        if len(history) > 1:
-                            prev_reading = history[1]['reading_value']
+                        
+                        # Find the previous reading (skip the current one if it's already in history)
+                        for h in history:
+                            # Skip if this is the current reading (same ID)
+                            if h.get('id') == r.get('id'):
+                                continue
+                            # This is a previous reading
+                            prev_reading = h['reading_value']
+                            break
                         
                         # Calculate consumption
                         consumption = reading_val - prev_reading
@@ -1068,12 +1075,18 @@ else:  # admin role
                 
                     # Step 6: AI Bill Calculation
                     st.info("🧮 Step 6: AI calculating electricity bill...")
-                    if len(historical_readings) > 0:
-                        previous_reading = historical_readings[0]['reading_value']
-                        consumption = wf_reading_value - previous_reading
-                    else:
-                        previous_reading = 0
-                        consumption = wf_reading_value
+                    
+                    # Find previous reading (skip current if it exists in history)
+                    previous_reading = 0
+                    for h in historical_readings:
+                        # Skip if this is the current reading (same value)
+                        if h['reading_value'] == wf_reading_value:
+                            continue
+                        # This is a previous reading
+                        previous_reading = h['reading_value']
+                        break
+                    
+                    consumption = wf_reading_value - previous_reading
                 
                     bill_calculation = ai_service.calculate_bill(
                         current_reading=wf_reading_value,
