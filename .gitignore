@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Environment variables
+.env
+auth0_token.txt
+.auth0_token.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+test_*.py
+verify_token.py
+
+# Distribution
+dist/
+build/
+*.egg-info/
+
+.gemini/
+
+node_modules/
+
+# Generated Streamlit artifacts
+data/meter_photo_links.json
+data/meter_photos/

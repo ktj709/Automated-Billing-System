@@ -1,0 +1,962 @@
+[
+  {
+    "unit_id": "4BHK-C8-SF",
+    "flat_no": "C8",
+    "floor": "SF",
+    "type": "4BHK",
+    "client_name": "S.Jora Singh and S. Bahadur Singh",
+    "meter_id": "21129958"
+  },
+  {
+    "unit_id": "4BHK-C8-FF",
+    "flat_no": "C8",
+    "floor": "FF",
+    "type": "4BHK",
+    "client_name": "Jaswant  singh randhawa",
+    "meter_id": "21129916"
+  },
+  {
+    "unit_id": "4BHK-C8-GF",
+    "flat_no": "C8",
+    "floor": "GF",
+    "type": "4BHK",
+    "client_name": "S.Jora Singh and S. Bahadur Singh",
+    "meter_id": "24114213"
+  },
+  {
+    "unit_id": "4BHK-C9-SF",
+    "flat_no": "C9",
+    "floor": "SF",
+    "type": "4BHK",
+    "client_name": "RAJBIR KAUR W/o Sukhinder Singh",
+    "meter_id": "528011"
+  },
+  {
+    "unit_id": "4BHK-C9-FF",
+    "flat_no": "C9",
+    "floor": "FF",
+    "type": "4BHK",
+    "client_name": "JARNAIL SINGH POWAR",
+    "meter_id": "22102869"
+  },
+  {
+    "unit_id": "4BHK-C9-GF",
+    "flat_no": "C9",
+    "floor": "GF",
+    "type": "4BHK",
+    "client_name": "JASPAL SOHI",
+    "meter_id": "528007"
+  },
+  {
+    "unit_id": "4BHK-C16-SF",
+    "flat_no": "C16",
+    "floor": "SF",
+    "type": "4BHK",
+    "client_name": "balbir kaur jabble",
+    "meter_id": "528010"
+  },
+  {
+    "unit_id": "4BHK-C16-FF",
+    "flat_no": "C16",
+    "floor": "FF",
+    "type": "4BHK",
+    "client_name": "Dr. Sant Singh Dhillon",
+    "meter_id": "24114215"
+  },
+  {
+    "unit_id": "4BHK-C16-GF",
+    "flat_no": "C16",
+    "floor": "GF",
+    "type": "4BHK",
+    "client_name": "Mrs. Neena Sood and Sudesh Sood",
+    "meter_id": "528004"
+  },
+  {
+    "unit_id": "4BHK-C17-SF",
+    "flat_no": "C17",
+    "floor": "SF",
+    "type": "4BHK",
+    "client_name": "Mr. Rajan Kumar s/o Ram Parshad Sharma",
+    "meter_id": "528014"
+  },
+  {
+    "unit_id": "4BHK-C17-FF",
+    "flat_no": "C17",
+    "floor": "FF",
+    "type": "4BHK",
+    "client_name": "Unique Contructions",
+    "meter_id": "22102921"
+  },
+  {
+    "unit_id": "4BHK-C17-GF",
+    "flat_no": "C17",
+    "floor": "GF",
+    "type": "4BHK",
+    "client_name": "GIRDHARI LAL CHOPRA",
+    "meter_id": "21082127"
+  },
+  {
+    "unit_id": "4BHK-C10-SF",
+    "flat_no": "C10",
+    "floor": "SF",
+    "type": "4BHK",
+    "client_name": "Balbir Singh",
+    "meter_id": "20054610"
+  },
+  {
+    "unit_id": "4BHK-C10-FF",
+    "flat_no": "C10",
+    "floor": "FF",
+    "type": "4BHK",
+    "client_name": "Daljit Kaur",
+    "meter_id": "20054604"
+  },
+  {
+    "unit_id": "4BHK-C10-GF",
+    "flat_no": "C10",
+    "floor": "GF",
+    "type": "4BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "20054606"
+  },
+  {
+    "unit_id": "4BHK-C11-SF",
+    "flat_no": "C11",
+    "floor": "SF",
+    "type": "4BHK",
+    "client_name": "Kanwar Shekhar C Sharma",
+    "meter_id": "20054956"
+  },
+  {
+    "unit_id": "4BHK-C11-FF",
+    "flat_no": "C11",
+    "floor": "FF",
+    "type": "4BHK",
+    "client_name": "Baljit Sharma",
+    "meter_id": "20054955"
+  },
+  {
+    "unit_id": "4BHK-C11-GF",
+    "flat_no": "C11",
+    "floor": "GF",
+    "type": "4BHK",
+    "client_name": "RACHNA JAIN",
+    "meter_id": "20054606"
+  },
+  {
+    "unit_id": "4BHK-C14-SF",
+    "flat_no": "C14",
+    "floor": "SF",
+    "type": "4BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "21082169"
+  },
+  {
+    "unit_id": "4BHK-C14-FF",
+    "flat_no": "C14",
+    "floor": "FF",
+    "type": "4BHK",
+    "client_name": "POOJA TRIKHA AND ASHIMA TRIKHA",
+    "meter_id": "21082169"
+  },
+  {
+    "unit_id": "4BHK-C14-GF",
+    "flat_no": "C14",
+    "floor": "GF",
+    "type": "4BHK",
+    "client_name": "BALBIR RAI TAHEEM",
+    "meter_id": "21082171"
+  },
+  {
+    "unit_id": "4BHK-C15-SF",
+    "flat_no": "C15",
+    "floor": "SF",
+    "type": "4BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "21082173"
+  },
+  {
+    "unit_id": "4BHK-C15-FF",
+    "flat_no": "C15",
+    "floor": "FF",
+    "type": "4BHK",
+    "client_name": "Harjinder Singh",
+    "meter_id": "21082173"
+  },
+  {
+    "unit_id": "4BHK-C15-GF",
+    "flat_no": "C15",
+    "floor": "GF",
+    "type": "4BHK",
+    "client_name": "Sumit Wadhera",
+    "meter_id": "21082175"
+  },
+  {
+    "unit_id": "5BHK-B5-SF",
+    "flat_no": "B5",
+    "floor": "SF",
+    "type": "5BHK",
+    "client_name": "Satinder Kaur",
+    "meter_id": "19152137"
+  },
+  {
+    "unit_id": "5BHK-B5-FF",
+    "flat_no": "B5",
+    "floor": "FF",
+    "type": "5BHK",
+    "client_name": "Komal Bhandari",
+    "meter_id": "19152141"
+  },
+  {
+    "unit_id": "5BHK-B5-GF",
+    "flat_no": "B5",
+    "floor": "GF",
+    "type": "5BHK",
+    "client_name": "Deepak Kapila",
+    "meter_id": "19152166"
+  },
+  {
+    "unit_id": "5BHK-B6-SF",
+    "flat_no": "B6",
+    "floor": "SF",
+    "type": "5BHK",
+    "client_name": "Satinder Bassi",
+    "meter_id": "19152196"
+  },
+  {
+    "unit_id": "5BHK-B6-FF",
+    "flat_no": "B6",
+    "floor": "FF",
+    "type": "5BHK",
+    "client_name": "Barinder Singh Bhullar",
+    "meter_id": "19152193"
+  },
+  {
+    "unit_id": "5BHK-B6-GF",
+    "flat_no": "B6",
+    "floor": "GF",
+    "type": "5BHK",
+    "client_name": "Nitin Tuteja",
+    "meter_id": "19152194"
+  },
+  {
+    "unit_id": "5BHK-B17-SF",
+    "flat_no": "B17",
+    "floor": "SF",
+    "type": "5BHK",
+    "client_name": "Romy Gupta",
+    "meter_id": "19152158"
+  },
+  {
+    "unit_id": "5BHK-B17-FF",
+    "flat_no": "B17",
+    "floor": "FF",
+    "type": "5BHK",
+    "client_name": "Kulwant Rai",
+    "meter_id": "19152159"
+  },
+  {
+    "unit_id": "5BHK-B17-GF",
+    "flat_no": "B17",
+    "floor": "GF",
+    "type": "5BHK",
+    "client_name": "Manjit Kaur",
+    "meter_id": "19152160"
+  },
+  {
+    "unit_id": "5BHK-B18-SF",
+    "flat_no": "B18",
+    "floor": "SF",
+    "type": "5BHK",
+    "client_name": "Birbal Sharma, Amritpal Singh",
+    "meter_id": "19152171"
+  },
+  {
+    "unit_id": "5BHK-B18-FF",
+    "flat_no": "B18",
+    "floor": "FF",
+    "type": "5BHK",
+    "client_name": "Vandana Aggarwal",
+    "meter_id": "19152195"
+  },
+  {
+    "unit_id": "5BHK-B18-GF",
+    "flat_no": "B18",
+    "floor": "GF",
+    "type": "5BHK",
+    "client_name": "Indu Aggarwal",
+    "meter_id": "19152157"
+  },
+  {
+    "unit_id": "2BHK-D1-SF",
+    "flat_no": "D1",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "19152022"
+  },
+  {
+    "unit_id": "2BHK-D1-FF",
+    "flat_no": "D1",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Prem Rana",
+    "meter_id": "19152221"
+  },
+  {
+    "unit_id": "2BHK-D1-GF",
+    "flat_no": "D1",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Vinod Khosla",
+    "meter_id": "22102860"
+  },
+  {
+    "unit_id": "2BHK-D2-SF",
+    "flat_no": "D2",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Rajesh Sabharwal",
+    "meter_id": "19151950"
+  },
+  {
+    "unit_id": "2BHK-D2-FF",
+    "flat_no": "D2",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Mohammad Qaqoo",
+    "meter_id": "21082126"
+  },
+  {
+    "unit_id": "2BHK-D2-GF",
+    "flat_no": "D2",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "19151950"
+  },
+  {
+    "unit_id": "2BHK-D3-SF",
+    "flat_no": "D3",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "19152248"
+  },
+  {
+    "unit_id": "2BHK-D3-FF",
+    "flat_no": "D3",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Dr. Prem Rana",
+    "meter_id": "19152248"
+  },
+  {
+    "unit_id": "2BHK-D3-GF",
+    "flat_no": "D3",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Iqbal Singh",
+    "meter_id": "19152248"
+  },
+  {
+    "unit_id": "2BHK-D4-SF",
+    "flat_no": "D4",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "19152170"
+  },
+  {
+    "unit_id": "2BHK-D4-FF",
+    "flat_no": "D4",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Aarti Garg",
+    "meter_id": "19152170"
+  },
+  {
+    "unit_id": "2BHK-D4-GF",
+    "flat_no": "D4",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Rashma Oberoi",
+    "meter_id": "19152170"
+  },
+  {
+    "unit_id": "2BHK-D6-SF",
+    "flat_no": "D6",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Manju Mahajan",
+    "meter_id": "22102735"
+  },
+  {
+    "unit_id": "2BHK-D6-FF",
+    "flat_no": "D6",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Kuldeep Singh",
+    "meter_id": "22102733"
+  },
+  {
+    "unit_id": "2BHK-D6-GF",
+    "flat_no": "D6",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Santosh Gambhir",
+    "meter_id": "19152140"
+  },
+  {
+    "unit_id": "2BHK-D7-SF",
+    "flat_no": "D7",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Gursharan Singh",
+    "meter_id": "19152192"
+  },
+  {
+    "unit_id": "2BHK-D7-FF",
+    "flat_no": "D7",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Rashma Oberoi",
+    "meter_id": "22102732"
+  },
+  {
+    "unit_id": "2BHK-D7-GF",
+    "flat_no": "D7",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Navdeep Kaur",
+    "meter_id": "19152138"
+  },
+  {
+    "unit_id": "2BHK-D8-SF",
+    "flat_no": "D8",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Anshu Gupta",
+    "meter_id": "19152165"
+  },
+  {
+    "unit_id": "2BHK-D8-FF",
+    "flat_no": "D8",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Ashok Kumar Mehra",
+    "meter_id": "19152165"
+  },
+  {
+    "unit_id": "2BHK-D8-GF",
+    "flat_no": "D8",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Dr. Navpreet Singh",
+    "meter_id": "19152165"
+  },
+  {
+    "unit_id": "2BHK-D9-SF",
+    "flat_no": "D9",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Jupinder Sandhu",
+    "meter_id": "19152143"
+  },
+  {
+    "unit_id": "2BHK-D9-FF",
+    "flat_no": "D9",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Rajbir Singh",
+    "meter_id": "19152139"
+  },
+  {
+    "unit_id": "2BHK-D9-GF",
+    "flat_no": "D9",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Surinder Kaur Ranger",
+    "meter_id": "19152167"
+  },
+  {
+    "unit_id": "2BHK-D10-SF",
+    "flat_no": "D10",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Anju Mahajan",
+    "meter_id": "19152144"
+  },
+  {
+    "unit_id": "2BHK-D10-FF",
+    "flat_no": "D10",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Lakhwinder Singh",
+    "meter_id": "19152144"
+  },
+  {
+    "unit_id": "2BHK-D10-GF",
+    "flat_no": "D10",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Robin Singal",
+    "meter_id": "19152144"
+  },
+  {
+    "unit_id": "2BHK-D11-SF",
+    "flat_no": "D11",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Aarti singh",
+    "meter_id": "19152142"
+  },
+  {
+    "unit_id": "2BHK-D11-FF",
+    "flat_no": "D11",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Inderpal Ahullwalia",
+    "meter_id": "22102730"
+  },
+  {
+    "unit_id": "2BHK-D11-GF",
+    "flat_no": "D11",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Amritbeer Kaur,Harkrishan Singh",
+    "meter_id": "22102734"
+  },
+  {
+    "unit_id": "2BHK-F2-SF",
+    "flat_no": "F2",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Manjit Kaur Gill",
+    "meter_id": "20054611"
+  },
+  {
+    "unit_id": "2BHK-F2-FF",
+    "flat_no": "F2",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "NISHAN SINGH",
+    "meter_id": "20054607"
+  },
+  {
+    "unit_id": "2BHK-F2-GF",
+    "flat_no": "F2",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "MANMOHAN SINGH",
+    "meter_id": "20054603"
+  },
+  {
+    "unit_id": "2BHK-F3-SF",
+    "flat_no": "F3",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Ms. Madhu Bala and VINOD KUMAR",
+    "meter_id": "19152177"
+  },
+  {
+    "unit_id": "2BHK-F3-FF",
+    "flat_no": "F3",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Ranjit kalsi",
+    "meter_id": "19152177"
+  },
+  {
+    "unit_id": "2BHK-F3-GF",
+    "flat_no": "F3",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Sehdev Singh",
+    "meter_id": "19152177"
+  },
+  {
+    "unit_id": "2BHK-F4-SF",
+    "flat_no": "F4",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Mr. Varun Vasudeva s/o Rajan Vasudev and Mrs. Sonia Vasudeva w/o Mr. Varun Vasudeva",
+    "meter_id": "19152229"
+  },
+  {
+    "unit_id": "2BHK-F4-FF",
+    "flat_no": "F4",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Ravinder Singh",
+    "meter_id": "19152229"
+  },
+  {
+    "unit_id": "2BHK-F4-GF",
+    "flat_no": "F4",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Ashok Oberoi",
+    "meter_id": "19152229"
+  },
+  {
+    "unit_id": "2BHK-F5-SF",
+    "flat_no": "F5",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "19151878"
+  },
+  {
+    "unit_id": "2BHK-F5-FF",
+    "flat_no": "F5",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "S. Gurpreet Singh s/o Amrik Singh",
+    "meter_id": "19151878"
+  },
+  {
+    "unit_id": "2BHK-F5-GF",
+    "flat_no": "F5",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "19151878"
+  },
+  {
+    "unit_id": "2BHK-F6-SF",
+    "flat_no": "F6",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "SUNIL PAWA, PARDEEP SINGH & SAROJ KUMARI",
+    "meter_id": "19152155"
+  },
+  {
+    "unit_id": "2BHK-F6-FF",
+    "flat_no": "F6",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "19152155"
+  },
+  {
+    "unit_id": "2BHK-F6-GF",
+    "flat_no": "F6",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "19152155"
+  },
+  {
+    "unit_id": "2BHK-F7-SF",
+    "flat_no": "F7",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Sh. Sanjay Bhardwaj AND Sh. Vikas Bhardwaj s/o Sh. R. C. Bhardawaj",
+    "meter_id": "20054602"
+  },
+  {
+    "unit_id": "2BHK-F7-FF",
+    "flat_no": "F7",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Menu sehgal",
+    "meter_id": "19152232"
+  },
+  {
+    "unit_id": "2BHK-F7-GF",
+    "flat_no": "F7",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "20054605"
+  },
+  {
+    "unit_id": "2BHK-F8-SF",
+    "flat_no": "F8",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "AMANJOT & ANUPREET KAUR",
+    "meter_id": "24197359"
+  },
+  {
+    "unit_id": "2BHK-F8-FF",
+    "flat_no": "F8",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Mr. Manbir Kaur w/o S. Amarpal Singh",
+    "meter_id": "24195893"
+  },
+  {
+    "unit_id": "2BHK-F8-GF",
+    "flat_no": "F8",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Ruchi ad Ruhi",
+    "meter_id": "20054609"
+  },
+  {
+    "unit_id": "2BHK-F9-SF",
+    "flat_no": "F9",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Rashma Oberai",
+    "meter_id": "22102737"
+  },
+  {
+    "unit_id": "2BHK-F9-FF",
+    "flat_no": "F9",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Rajwant Singh s/o Chanan Singh",
+    "meter_id": "22102738"
+  },
+  {
+    "unit_id": "2BHK-F9-GF",
+    "flat_no": "F9",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "MANISHA SODHI",
+    "meter_id": "22102731"
+  },
+  {
+    "unit_id": "2BHK-F10-SF",
+    "flat_no": "F10",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Mr. Rajwinder Kaur w/o Jaskaran Singh/tajinder Kaur (dr Hartej)",
+    "meter_id": "22102737"
+  },
+  {
+    "unit_id": "2BHK-F10-FF",
+    "flat_no": "F10",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "MANISHA SODHI",
+    "meter_id": "22102739"
+  },
+  {
+    "unit_id": "2BHK-F10-GF",
+    "flat_no": "F10",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "MANISHA SODHI",
+    "meter_id": "22102736"
+  },
+  {
+    "unit_id": "2BHK-F15-SF",
+    "flat_no": "F15",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "S. Kashmir Singh s/o S. Mehain Singh/Harpreet (Dr Hargun)",
+    "meter_id": "20098564"
+  },
+  {
+    "unit_id": "2BHK-F15-FF",
+    "flat_no": "F15",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Geeta Khurana",
+    "meter_id": "20098564"
+  },
+  {
+    "unit_id": "2BHK-F15-GF",
+    "flat_no": "F15",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "MANISHA SODHI",
+    "meter_id": "20098564"
+  },
+  {
+    "unit_id": "2BHK-F16-SF",
+    "flat_no": "F16",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Sh. Rahul Gautam s/o Kapil Dev Gautam//Anjana Gautam",
+    "meter_id": "20098507"
+  },
+  {
+    "unit_id": "2BHK-F16-FF",
+    "flat_no": "F16",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Amarjeet Kaur",
+    "meter_id": "20098507"
+  },
+  {
+    "unit_id": "2BHK-F16-GF",
+    "flat_no": "F16",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "DIVYA KAPOOR",
+    "meter_id": "20098507"
+  },
+  {
+    "unit_id": "2BHK-F17-SF",
+    "flat_no": "F17",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "RANJIT SINGH BHANGU",
+    "meter_id": "21082125"
+  },
+  {
+    "unit_id": "2BHK-F17-FF",
+    "flat_no": "F17",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Prabhjot Kalsi",
+    "meter_id": "22102863"
+  },
+  {
+    "unit_id": "2BHK-F17-GF",
+    "flat_no": "F17",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Prabhjot Kalsi",
+    "meter_id": "22102861"
+  },
+  {
+    "unit_id": "2BHK-F18-SF",
+    "flat_no": "F18",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Mrs. Gulati",
+    "meter_id": "21129915"
+  },
+  {
+    "unit_id": "2BHK-F18-FF",
+    "flat_no": "F18",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "S. Salwant Singh s/o Sh. Chanan Singh AND Smt. Puro Kaur w/o S. Salwant Singh",
+    "meter_id": "22102943"
+  },
+  {
+    "unit_id": "2BHK-F18-GF",
+    "flat_no": "F18",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Surinderjit Singh",
+    "meter_id": "21082123"
+  },
+  {
+    "unit_id": "2BHK-F19-SF",
+    "flat_no": "F19",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Dr. Prem Rana",
+    "meter_id": "19152172"
+  },
+  {
+    "unit_id": "2BHK-F19-FF",
+    "flat_no": "F19",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Regent Land Holdings Pvt Ltd",
+    "meter_id": "19152172"
+  },
+  {
+    "unit_id": "2BHK-F19-GF",
+    "flat_no": "F19",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "Dr. Prem Rana",
+    "meter_id": "19152172"
+  },
+  {
+    "unit_id": "2BHK-F20-SF",
+    "flat_no": "F20",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Mr. Gunjan Dua s/o Sh. Harish dua",
+    "meter_id": "19152169"
+  },
+  {
+    "unit_id": "2BHK-F20-FF",
+    "flat_no": "F20",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Mrs. Renu Aggarwal w/o Rakesh Kumar Aggarwal AND Mr. Rakesh Kumar Aggarwal s/o Darshan Kumar Aggarwal",
+    "meter_id": "19152169"
+  },
+  {
+    "unit_id": "2BHK-F20-GF",
+    "flat_no": "F20",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "vijay kumar baheri",
+    "meter_id": "22102940"
+  },
+  {
+    "unit_id": "2BHK-F21-SF",
+    "flat_no": "F21",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "S. Jagnandan Bir Singh s/o S. Narottam Singh",
+    "meter_id": "20098575"
+  },
+  {
+    "unit_id": "2BHK-F21-FF",
+    "flat_no": "F21",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "Mr. Gautam Jain s/o Paras Das Jain and Rakesh Kumar Aggarwal S/o Darshan Kumar aggarwal",
+    "meter_id": "20098575"
+  },
+  {
+    "unit_id": "2BHK-F21-GF",
+    "flat_no": "F21",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "nirmal singh sandhu",
+    "meter_id": "20098575"
+  },
+  {
+    "unit_id": "2BHK-F22-SF",
+    "flat_no": "F22",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Smt. Avtar Kaur w/o S. Rattan Singh",
+    "meter_id": "24195889"
+  },
+  {
+    "unit_id": "2BHK-F22-FF",
+    "flat_no": "F22",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "QAZI HILAL AHMAD",
+    "meter_id": "24195890"
+  },
+  {
+    "unit_id": "2BHK-F22-GF",
+    "flat_no": "F22",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "nirmal singh sandhu",
+    "meter_id": "20098574"
+  },
+  {
+    "unit_id": "2BHK-F23-SF",
+    "flat_no": "F23",
+    "floor": "SF",
+    "type": "2BHK",
+    "client_name": "Mr. Sunil Kumar s/o Hari Shankar Singh",
+    "meter_id": "24195892"
+  },
+  {
+    "unit_id": "2BHK-F23-FF",
+    "flat_no": "F23",
+    "floor": "FF",
+    "type": "2BHK",
+    "client_name": "S. Maninder Singh s/o S. Rewel Singh AND Smt. Sumandeep Kaur w/o S. Maninder Singh",
+    "meter_id": "20098573"
+  },
+  {
+    "unit_id": "2BHK-F23-GF",
+    "flat_no": "F23",
+    "floor": "GF",
+    "type": "2BHK",
+    "client_name": "nirmal singh sandhu",
+    "meter_id": "24195891"
+  }
+]

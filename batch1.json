@@ -1,0 +1,394 @@
+[
+    {
+        "code": "B17-FF",
+        "total_amount": "3711.00",
+        "flat_units": "77.00",
+        "motor_units": "210.00",
+        "total_units": "116.63"
+    },
+    {
+        "code": "B17-GF",
+        "total_amount": "2656.00",
+        "flat_units": "19.00",
+        "motor_units": "210.00",
+        "total_units": "28.78"
+    },
+    {
+        "code": "B17-SF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "B18-FF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "B18-GF",
+        "total_amount": "2602.00",
+        "flat_units": "16.00",
+        "motor_units": "210.00",
+        "total_units": "24.24"
+    },
+    {
+        "code": "B18-SF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "B5-FF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "B5-GF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "B5-SF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "B6-FF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "B6-GF",
+        "total_amount": "7691.00",
+        "flat_units": "296.00",
+        "motor_units": "210.00",
+        "total_units": "448.35"
+    },
+    {
+        "code": "B6-SF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C10-FF",
+        "total_amount": "4189.00",
+        "flat_units": "156.00",
+        "motor_units": "316.00",
+        "total_units": "191.57"
+    },
+    {
+        "code": "C10-GF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C10-SF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C11-FF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C11-GF",
+        "total_amount": "3864.00",
+        "flat_units": "138.00",
+        "motor_units": "316.00",
+        "total_units": "173.57"
+    },
+    {
+        "code": "C11-SF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C13-FF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C13-GF",
+        "total_amount": "4295.00",
+        "flat_units": "152.00",
+        "motor_units": "316.00",
+        "total_units": "202.13"
+    },
+    {
+        "code": "C13-SF",
+        "total_amount": "2062.00",
+        "flat_units": "12.00",
+        "motor_units": "316.00",
+        "total_units": "16.27"
+    },
+    {
+        "code": "C14-FF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C14-GF",
+        "total_amount": "2134.00",
+        "flat_units": "17.00",
+        "motor_units": "316.00",
+        "total_units": "21.27"
+    },
+    {
+        "code": "C14-SF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C15-FF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C15-GF",
+        "total_amount": "3907.00",
+        "flat_units": "141.00",
+        "motor_units": "316.00",
+        "total_units": "176.57"
+    },
+    {
+        "code": "C15-SF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C19-FF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C19-GF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C19-SF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C2-FF",
+        "total_amount": "3443.00",
+        "flat_units": "96.00",
+        "motor_units": "523.00",
+        "total_units": "137.23"
+    },
+    {
+        "code": "C2-GF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "523.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C2-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "523.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C20-FF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C20-GF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C20-SF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C21-FF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C21-GF",
+        "total_amount": "3979.00",
+        "flat_units": "146.00",
+        "motor_units": "316.00",
+        "total_units": "181.57"
+    },
+    {
+        "code": "C21-SF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C22-FF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "C22-GF",
+        "total_amount": "3749.00",
+        "flat_units": "130.00",
+        "motor_units": "316.00",
+        "total_units": "165.57"
+    },
+    {
+        "code": "C22-SF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "D1-FF",
+        "total_amount": "1735.00",
+        "flat_units": "10.00",
+        "motor_units": "523.00",
+        "total_units": "21.78"
+    },
+    {
+        "code": "D1-GF",
+        "total_amount": "1866.00",
+        "flat_units": "15.00",
+        "motor_units": "523.00",
+        "total_units": "32.67"
+    },
+    {
+        "code": "D1-SF",
+        "total_amount": "2389.00",
+        "flat_units": "35.00",
+        "motor_units": "523.00",
+        "total_units": "76.23"
+    },
+    {
+        "code": "D10-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "217.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "D10-GF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "217.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "D10-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "217.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "D11-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "217.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "D11-GF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "217.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "D11-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "217.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "D2-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "523.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "D2-GF",
+        "total_amount": "5629.00",
+        "flat_units": "159.00",
+        "motor_units": "523.00",
+        "total_units": "346.29"
+    },
+    {
+        "code": "D2-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "523.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "D3-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "523.00",
+        "total_units": "0.00"
+    },
+    {
+        "code": "D3-GF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "523.00",
+        "total_units": "0.00"
+    }
+]

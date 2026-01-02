@@ -1,0 +1,123 @@
+Blessings City - Electricity Master Data,Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6,Unnamed: 7,Unnamed: 8,Unnamed: 9,Unnamed: 10,Unnamed: 11
+,,,,,,,,,,,
+Unit_ID,Sr.No,Flat no,Floor,Type,Client Name,Meter No.,Fixed_Charges,Occupancy_Status,Meter_Status,Billing_Entity,Sharing_Group
+4BHK-C8-SF,1,C8,SF,4BHK,S.Jora Singh and S. Bahadur Singh,21129958,1890,Occupied,Active,S.Jora Singh and S. Bahadur Singh,
+4BHK-C8-FF,2,C8,FF,4BHK,Jaswant  singh randhawa,21129916,1890,Occupied,Active,Jaswant  singh randhawa,
+4BHK-C8-GF,3,C8,GF,4BHK,S.Jora Singh and S. Bahadur Singh,24114213,1890,Occupied,Active,S.Jora Singh and S. Bahadur Singh,
+4BHK-C9-SF,4,C9,SF,4BHK,RAJBIR KAUR W/o Sukhinder Singh,528011,1890,Occupied,Active,RAJBIR KAUR W/o Sukhinder Singh,
+4BHK-C9-FF,5,C9,FF,4BHK,JARNAIL SINGH POWAR,22102869,1890,Occupied,Active,JARNAIL SINGH POWAR,
+4BHK-C9-GF,6,C9,GF,4BHK,JASPAL SOHI,528007,1890,Occupied,Active,JASPAL SOHI,
+4BHK-C16-SF,7,C16,SF,4BHK,balbir kaur jabble,528010,1890,Occupied,Active,balbir kaur jabble,
+4BHK-C16-FF,8,C16,FF,4BHK,Dr. Sant Singh Dhillon,24114215,1890,Occupied,Active,Dr. Sant Singh Dhillon,
+4BHK-C16-GF,9,C16,GF,4BHK,Mrs. Neena Sood and Sudesh Sood,528004,1890,Occupied,Active,Mrs. Neena Sood and Sudesh Sood,
+4BHK-C17-SF,10,C17,SF,4BHK,Mr. Rajan Kumar s/o Ram Parshad Sharma,528014,1890,Occupied,Active,Mr. Rajan Kumar s/o Ram Parshad Sharma,
+4BHK-C17-FF,11,C17,FF,4BHK,Unique Contructions,22102921,1890,Occupied,Active,Unique Contructions,
+4BHK-C17-GF,12,C17,GF,4BHK,GIRDHARI LAL CHOPRA,21082127,1890,Occupied,Active,GIRDHARI LAL CHOPRA,
+4BHK-C10-SF,13,C10,SF,4BHK,Balbir Singh,20054610,1890,Occupied,Active,Balbir Singh,
+4BHK-C10-FF,14,C10,FF,4BHK,Daljit Kaur,20054604,1890,Occupied,Active,Daljit Kaur,
+4BHK-C10-GF,15,C10,GF,4BHK,Regent Land Holdings Pvt Ltd,20054606,1890,Unsold,ERROR - Verify,Regent Land Holdings Pvt Ltd,ERR017
+4BHK-C11-SF,16,C11,SF,4BHK,Kanwar Shekhar C Sharma,20054956,1890,Occupied,Active,Kanwar Shekhar C Sharma,
+4BHK-C11-FF,17,C11,FF,4BHK,Baljit Sharma,20054955,1890,Occupied,Active,Baljit Sharma,
+4BHK-C11-GF,18,C11,GF,4BHK,RACHNA JAIN,20054606,1890,Occupied,ERROR - Verify,RACHNA JAIN,ERR017
+4BHK-C14-SF,19,C14,SF,4BHK,Regent Land Holdings Pvt Ltd,21082169,1890,Unsold,Shared,Regent Land Holdings Pvt Ltd,SG018
+4BHK-C14-FF,20,C14,FF,4BHK,POOJA TRIKHA AND ASHIMA TRIKHA,21082169,1890,Occupied,Shared,POOJA TRIKHA AND ASHIMA TRIKHA,SG018
+4BHK-C14-GF,21,C14,GF,4BHK,BALBIR RAI TAHEEM,21082171,1890,Occupied,Active,BALBIR RAI TAHEEM,
+4BHK-C15-SF,22,C15,SF,4BHK,Regent Land Holdings Pvt Ltd,21082173,1890,Unsold,Shared,Regent Land Holdings Pvt Ltd,SG015
+4BHK-C15-FF,23,C15,FF,4BHK,Harjinder Singh,21082173,1890,Occupied,Shared,Harjinder Singh,SG015
+4BHK-C15-GF,24,C15,GF,4BHK,Sumit Wadhera,21082175,1890,Occupied,Active,Sumit Wadhera,
+5BHK-B5-SF,25,B5,SF,5BHK,Satinder Kaur,19152137,2311,Occupied,Active,Satinder Kaur,
+5BHK-B5-FF,26,B5,FF,5BHK,Komal Bhandari,19152141,2311,Occupied,Active,Komal Bhandari,
+5BHK-B5-GF,27,B5,GF,5BHK,Deepak Kapila,19152166,2311,Occupied,Active,Deepak Kapila,
+5BHK-B6-SF,28,B6,SF,5BHK,Satinder Bassi,19152196,2311,Occupied,Active,Satinder Bassi,
+5BHK-B6-FF,29,B6,FF,5BHK,Barinder Singh Bhullar,19152193,2311,Occupied,Active,Barinder Singh Bhullar,
+5BHK-B6-GF,30,B6,GF,5BHK,Nitin Tuteja,19152194,2311,Occupied,Active,Nitin Tuteja,
+5BHK-B17-SF,31,B17,SF,5BHK,Romy Gupta,19152158,2311,Occupied,Active,Romy Gupta,
+5BHK-B17-FF,32,B17,FF,5BHK,Kulwant Rai,19152159,2311,Occupied,Active,Kulwant Rai,
+5BHK-B17-GF,33,B17,GF,5BHK,Manjit Kaur,19152160,2311,Occupied,Active,Manjit Kaur,
+5BHK-B18-SF,34,B18,SF,5BHK,"Birbal Sharma, Amritpal Singh",19152171,2311,Occupied,Active,"Birbal Sharma, Amritpal Singh",
+5BHK-B18-FF,35,B18,FF,5BHK,Vandana Aggarwal,19152195,2311,Occupied,Active,Vandana Aggarwal,
+5BHK-B18-GF,36,B18,GF,5BHK,Indu Aggarwal,19152157,2311,Occupied,Active,Indu Aggarwal,
+2BHK-D1-SF,37,D1,SF,2BHK,Regent Land Holdings Pvt Ltd,19152022,1474,Unsold,Active,Regent Land Holdings Pvt Ltd,
+2BHK-D1-FF,38,D1,FF,2BHK,Prem Rana,19152221,1474,Occupied,Active,Prem Rana,
+2BHK-D1-GF,39,D1,GF,2BHK,Vinod Khosla,22102860,1474,Occupied,Active,Vinod Khosla,
+2BHK-D2-SF,40,D2,SF,2BHK,Rajesh Sabharwal,19151950,1474,Occupied,Shared,Rajesh Sabharwal,SG013
+2BHK-D2-FF,41,D2,FF,2BHK,Mohammad Qaqoo,21082126,1474,Occupied,Active,Mohammad Qaqoo,
+2BHK-D2-GF,42,D2,GF,2BHK,Regent Land Holdings Pvt Ltd,19151950,1474,Unsold,Shared,Regent Land Holdings Pvt Ltd,SG013
+2BHK-D3-SF,43,D3,SF,2BHK,Regent Land Holdings Pvt Ltd,19152248,1474,Unsold,Shared,Regent Land Holdings Pvt Ltd,SG010
+2BHK-D3-FF,44,D3,FF,2BHK,Dr. Prem Rana,19152248,1474,Occupied,Shared,Dr. Prem Rana,SG010
+2BHK-D3-GF,45,D3,GF,2BHK,Iqbal Singh,19152248,1474,Occupied,Shared,Iqbal Singh,SG010
+2BHK-D4-SF,46,D4,SF,2BHK,Regent Land Holdings Pvt Ltd,19152170,1474,Unsold,Shared,Regent Land Holdings Pvt Ltd,SG009
+2BHK-D4-FF,47,D4,FF,2BHK,Aarti Garg,19152170,1474,Occupied,Shared,Aarti Garg,SG009
+2BHK-D4-GF,48,D4,GF,2BHK,Rashma Oberoi,19152170,1474,Occupied,Shared,Rashma Oberoi,SG009
+2BHK-D6-SF,49,D6,SF,2BHK,Manju Mahajan,22102735,1474,Occupied,Active,Manju Mahajan,
+2BHK-D6-FF,50,D6,FF,2BHK,Kuldeep Singh,22102733,1474,Occupied,Active,Kuldeep Singh,
+2BHK-D6-GF,51,D6,GF,2BHK,Santosh Gambhir,19152140,1474,Occupied,Active,Santosh Gambhir,
+2BHK-D7-SF,52,D7,SF,2BHK,Gursharan Singh,19152192,1474,Occupied,Active,Gursharan Singh,
+2BHK-D7-FF,53,D7,FF,2BHK,Rashma Oberoi,22102732,1474,Occupied,Active,Rashma Oberoi,
+2BHK-D7-GF,54,D7,GF,2BHK,Navdeep Kaur,19152138,1474,Occupied,Active,Navdeep Kaur,
+2BHK-D8-SF,55,D8,SF,2BHK,Anshu Gupta,19152165,1474,Occupied,Shared,Anshu Gupta,SG007
+2BHK-D8-FF,56,D8,FF,2BHK,Ashok Kumar Mehra,19152165,1474,Occupied,Shared,Ashok Kumar Mehra,SG007
+2BHK-D8-GF,57,D8,GF,2BHK,Dr. Navpreet Singh,19152165,1474,Occupied,Shared,Dr. Navpreet Singh,SG007
+2BHK-D9-SF,58,D9,SF,2BHK,Jupinder Sandhu,19152143,1474,Occupied,Active,Jupinder Sandhu,
+2BHK-D9-FF,59,D9,FF,2BHK,Rajbir Singh,19152139,1474,Occupied,Active,Rajbir Singh,
+2BHK-D9-GF,60,D9,GF,2BHK,Surinder Kaur Ranger,19152167,1474,Occupied,Active,Surinder Kaur Ranger,
+2BHK-D10-SF,61,D10,SF,2BHK,Anju Mahajan,19152144,1474,Occupied,Shared,Anju Mahajan,SG008
+2BHK-D10-FF,62,D10,FF,2BHK,Lakhwinder Singh,19152144,1474,Occupied,Shared,Lakhwinder Singh,SG008
+2BHK-D10-GF,63,D10,GF,2BHK,Robin Singal,19152144,1474,Occupied,Shared,Robin Singal,SG008
+2BHK-D11-SF,64,D11,SF,2BHK,Aarti singh,19152142,1474,Occupied,Active,Aarti singh,
+2BHK-D11-FF,65,D11,FF,2BHK,Inderpal Ahullwalia ,22102730,1474,Occupied,Active,Inderpal Ahullwalia ,
+2BHK-D11-GF,66,D11,GF,2BHK,"Amritbeer Kaur,Harkrishan Singh",22102734,1474,Occupied,Active,"Amritbeer Kaur,Harkrishan Singh",
+2BHK-F2-SF,67,F2,SF,2BHK,Manjit Kaur Gill,20054611,1474,Occupied,Active,Manjit Kaur Gill,
+2BHK-F2-FF,68,F2,FF,2BHK,NISHAN SINGH,20054607,1474,Occupied,Active,NISHAN SINGH,
+2BHK-F2-GF,69,F2,GF,2BHK,MANMOHAN SINGH,20054603,1474,Occupied,Active,MANMOHAN SINGH,
+2BHK-F3-SF,70,F3,SF,2BHK,Ms. Madhu Bala and VINOD KUMAR,19152177,1474,Occupied,Shared,Ms. Madhu Bala and VINOD KUMAR,SG006
+2BHK-F3-FF,71,F3,FF,2BHK,Ranjit kalsi,19152177,1474,Occupied,Shared,Ranjit kalsi,SG006
+2BHK-F3-GF,72,F3,GF,2BHK,Sehdev Singh,19152177,1474,Occupied,Shared,Sehdev Singh,SG006
+2BHK-F4-SF,73,F4,SF,2BHK,Mr. Varun Vasudeva s/o Rajan Vasudev and Mrs. Sonia Vasudeva w/o Mr. Varun Vasudeva,19152229,1474,Occupied,Shared,Mr. Varun Vasudeva s/o Rajan Vasudev and Mrs. Sonia Vasudeva w/o Mr. Varun Vasudeva,SG003
+2BHK-F4-FF,74,F4,FF,2BHK,Ravinder Singh,19152229,1474,Occupied,Shared,Ravinder Singh,SG003
+2BHK-F4-GF,75,F4,GF,2BHK,Ashok Oberoi,19152229,1474,Occupied,Shared,Ashok Oberoi,SG003
+2BHK-F5-SF,76,F5,SF,2BHK,Regent Land Holdings Pvt Ltd,19151878,1474,Unsold,Shared,Regent Land Holdings Pvt Ltd,SG004
+2BHK-F5-FF,77,F5,FF,2BHK,S. Gurpreet Singh s/o Amrik Singh,19151878,1474,Occupied,Shared,S. Gurpreet Singh s/o Amrik Singh,SG004
+2BHK-F5-GF,78,F5,GF,2BHK,Regent Land Holdings Pvt Ltd,19151878,1474,Unsold,Shared,Regent Land Holdings Pvt Ltd,SG004
+2BHK-F6-SF,79,F6,SF,2BHK,"SUNIL PAWA, PARDEEP SINGH & SAROJ KUMARI",19152155,1474,Occupied,Shared,"SUNIL PAWA, PARDEEP SINGH & SAROJ KUMARI",SG005
+2BHK-F6-FF,80,F6,FF,2BHK,Regent Land Holdings Pvt Ltd,19152155,1474,Unsold,Shared,Regent Land Holdings Pvt Ltd,SG005
+2BHK-F6-GF,81,F6,GF,2BHK,Regent Land Holdings Pvt Ltd,19152155,1474,Unsold,Shared,Regent Land Holdings Pvt Ltd,SG005
+2BHK-F7-SF,82,F7,SF,2BHK,Sh. Sanjay Bhardwaj AND Sh. Vikas Bhardwaj s/o Sh. R. C. Bhardawaj,20054602,1474,Occupied,Active,Sh. Sanjay Bhardwaj AND Sh. Vikas Bhardwaj s/o Sh. R. C. Bhardawaj,
+2BHK-F7-FF,83,F7,FF,2BHK,Menu sehgal,19152232,1474,Occupied,Active,Menu sehgal,
+2BHK-F7-GF,84,F7,GF,2BHK,Regent Land Holdings Pvt Ltd,20054605,1474,Unsold,Active,Regent Land Holdings Pvt Ltd,
+2BHK-F8-SF,85,F8,SF,2BHK,AMANJOT & ANUPREET KAUR,24197359,1474,Occupied,Active,AMANJOT & ANUPREET KAUR,
+2BHK-F8-FF,86,F8,FF,2BHK,Mr. Manbir Kaur w/o S. Amarpal Singh,24195893,1474,Occupied,Active,Mr. Manbir Kaur w/o S. Amarpal Singh,
+2BHK-F8-GF,87,F8,GF,2BHK,Ruchi ad Ruhi,20054609,1474,Occupied,Active,Ruchi ad Ruhi,
+2BHK-F9-SF,88,F9,SF,2BHK,Rashma Oberai,22102737,1474,Occupied,ERROR - Verify,Rashma Oberai,ERR014
+2BHK-F9-FF,89,F9,FF,2BHK,Rajwant Singh s/o Chanan Singh ,22102738,1474,Occupied,Active,Rajwant Singh s/o Chanan Singh ,
+2BHK-F9-GF,90,F9,GF,2BHK,MANISHA SODHI,22102731,1474,Occupied,Active,MANISHA SODHI,
+2BHK-F10-SF,91,F10,SF,2BHK,Mr. Rajwinder Kaur w/o Jaskaran Singh/tajinder Kaur (dr Hartej),22102737,1474,Occupied,ERROR - Verify,Mr. Rajwinder Kaur w/o Jaskaran Singh/tajinder Kaur (dr Hartej),ERR014
+2BHK-F10-FF,92,F10,FF,2BHK,MANISHA SODHI,22102739,1474,Occupied,Active,MANISHA SODHI,
+2BHK-F10-GF,93,F10,GF,2BHK,MANISHA SODHI,22102736,1474,Occupied,Active,MANISHA SODHI,
+2BHK-F15-SF,94,F15,SF,2BHK,S. Kashmir Singh s/o S. Mehain Singh/Harpreet (Dr Hargun),20098564,1474,Occupied,Shared,S. Kashmir Singh s/o S. Mehain Singh/Harpreet (Dr Hargun),SG002
+2BHK-F15-FF,95,F15,FF,2BHK,Geeta Khurana,20098564,1474,Occupied,Shared,Geeta Khurana,SG002
+2BHK-F15-GF,96,F15,GF,2BHK,MANISHA SODHI,20098564,1474,Occupied,Shared,MANISHA SODHI,SG002
+2BHK-F16-SF,97,F16,SF,2BHK,Sh. Rahul Gautam s/o Kapil Dev Gautam//Anjana Gautam,20098507,1474,Occupied,Shared,Sh. Rahul Gautam s/o Kapil Dev Gautam//Anjana Gautam,SG011
+2BHK-F16-FF,98,F16,FF,2BHK,Amarjeet Kaur,20098507,1474,Occupied,Shared,Amarjeet Kaur,SG011
+2BHK-F16-GF,99,F16,GF,2BHK,DIVYA KAPOOR,20098507,1474,Occupied,Shared,DIVYA KAPOOR,SG011
+2BHK-F17-SF,100,F17,SF,2BHK,RANJIT SINGH BHANGU,21082125,1474,Occupied,Active,RANJIT SINGH BHANGU,
+2BHK-F17-FF,101,F17,FF,2BHK,Prabhjot Kalsi,22102863,1474,Occupied,Active,Prabhjot Kalsi,
+2BHK-F17-GF,102,F17,GF,2BHK,Prabhjot Kalsi,22102861,1474,Occupied,Active,Prabhjot Kalsi,
+2BHK-F18-SF,103,F18,SF,2BHK,Mrs. Gulati,21129915,1474,Occupied,Active,Mrs. Gulati,
+2BHK-F18-FF,104,F18,FF,2BHK,S. Salwant Singh s/o Sh. Chanan Singh AND Smt. Puro Kaur w/o S. Salwant Singh,22102943,1474,Occupied,Active,S. Salwant Singh s/o Sh. Chanan Singh AND Smt. Puro Kaur w/o S. Salwant Singh,
+2BHK-F18-GF,105,F18,GF,2BHK,Surinderjit Singh,21082123,1474,Occupied,Active,Surinderjit Singh,
+2BHK-F19-SF,106,F19,SF,2BHK,Dr. Prem Rana ,19152172,1474,Occupied,Shared,Dr. Prem Rana ,SG012
+2BHK-F19-FF,107,F19,FF,2BHK,Regent Land Holdings Pvt Ltd,19152172,1474,Unsold,Shared,Regent Land Holdings Pvt Ltd,SG012
+2BHK-F19-GF,108,F19,GF,2BHK,Dr. Prem Rana ,19152172,1474,Occupied,Shared,Dr. Prem Rana ,SG012
+2BHK-F20-SF,109,F20,SF,2BHK,Mr. Gunjan Dua s/o Sh. Harish dua,19152169,1474,Occupied,Shared,Mr. Gunjan Dua s/o Sh. Harish dua,SG016
+2BHK-F20-FF,110,F20,FF,2BHK,Mrs. Renu Aggarwal w/o Rakesh Kumar Aggarwal AND Mr. Rakesh Kumar Aggarwal s/o Darshan Kumar Aggarwal ,19152169,1474,Occupied,Shared,Mrs. Renu Aggarwal w/o Rakesh Kumar Aggarwal AND Mr. Rakesh Kumar Aggarwal s/o Darshan Kumar Aggarwal ,SG016
+2BHK-F20-GF,111,F20,GF,2BHK,vijay kumar baheri,22102940,1474,Occupied,Active,vijay kumar baheri,
+2BHK-F21-SF,112,F21,SF,2BHK,S. Jagnandan Bir Singh s/o S. Narottam Singh,20098575,1474,Occupied,Shared,S. Jagnandan Bir Singh s/o S. Narottam Singh,SG001
+2BHK-F21-FF,113,F21,FF,2BHK,Mr. Gautam Jain s/o Paras Das Jain and Rakesh Kumar Aggarwal S/o Darshan Kumar aggarwal,20098575,1474,Occupied,Shared,Mr. Gautam Jain s/o Paras Das Jain and Rakesh Kumar Aggarwal S/o Darshan Kumar aggarwal,SG001
+2BHK-F21-GF,114,F21,GF,2BHK,nirmal singh sandhu,20098575,1474,Occupied,Shared,nirmal singh sandhu,SG001
+2BHK-F22-SF,115,F22,SF,2BHK,Smt. Avtar Kaur w/o S. Rattan Singh,24195889,1474,Occupied,Active,Smt. Avtar Kaur w/o S. Rattan Singh,
+2BHK-F22-FF,116,F22,FF,2BHK,QAZI HILAL AHMAD,24195890,1474,Occupied,Active,QAZI HILAL AHMAD,
+2BHK-F22-GF,117,F22,GF,2BHK,nirmal singh sandhu,20098574,1474,Occupied,Active,nirmal singh sandhu,
+2BHK-F23-SF,118,F23,SF,2BHK,Mr. Sunil Kumar s/o Hari Shankar Singh,24195892,1474,Occupied,Active,Mr. Sunil Kumar s/o Hari Shankar Singh,
+2BHK-F23-FF,119,F23,FF,2BHK,S. Maninder Singh s/o S. Rewel Singh AND Smt. Sumandeep Kaur w/o S. Maninder Singh,20098573,1474,Occupied,Active,S. Maninder Singh s/o S. Rewel Singh AND Smt. Sumandeep Kaur w/o S. Maninder Singh,
+2BHK-F23-GF,120,F23,GF,2BHK,nirmal singh sandhu,24195891,1474,Occupied,Active,nirmal singh sandhu,

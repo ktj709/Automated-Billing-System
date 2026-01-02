@@ -1,0 +1,5 @@
+{
+  "name": "Blessings City Billing AI",
+  "description": "An AI-powered billing management system for Blessings City, facilitating unit lookup, meter data management, and automated bill generation for flats, villas, and SCOs.",
+  "requestFramePermissions": []
+}

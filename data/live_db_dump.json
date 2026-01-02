@@ -1,0 +1,660 @@
+[
+    {
+        "flat_code": "B5-GF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "B6-SF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C10-GF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C15-SF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "B17-FF",
+        "total_amount": "3711.00",
+        "flat_units": "77.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "B17-GF",
+        "total_amount": "2656.00",
+        "flat_units": "19.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "B17-SF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "B18-FF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "B18-GF",
+        "total_amount": "2602.00",
+        "flat_units": "16.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "B18-SF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "B5-FF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "B5-SF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "B6-FF",
+        "total_amount": "2311.00",
+        "flat_units": "0.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "B6-GF",
+        "total_amount": "7691.00",
+        "flat_units": "296.00",
+        "motor_units": "210.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C10-FF",
+        "total_amount": "4189.00",
+        "flat_units": "156.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C10-SF",
+        "total_amount": "1978.00",
+        "flat_units": "6.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C11-FF",
+        "total_amount": "2817.00",
+        "flat_units": "21.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C11-GF",
+        "total_amount": "2600.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C11-SF",
+        "total_amount": "2600.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C12-FF",
+        "total_amount": "2788.00",
+        "flat_units": "19.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C12-GF",
+        "total_amount": "4090.00",
+        "flat_units": "149.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C12-SF",
+        "total_amount": "2600.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C13-FF",
+        "total_amount": "2600.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C13-GF",
+        "total_amount": "2600.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C13-SF",
+        "total_amount": "2527.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C14-FF",
+        "total_amount": "3017.00",
+        "flat_units": "41.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C14-GF",
+        "total_amount": "2600.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C14-SF",
+        "total_amount": "5206.00",
+        "flat_units": "256.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C15-FF",
+        "total_amount": "1944.00",
+        "flat_units": "3.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C15-GF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C18-FF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C18-GF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C18-SF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C19-FF",
+        "total_amount": "1890.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C19-GF",
+        "total_amount": "2363.00",
+        "flat_units": "26.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C19-SF",
+        "total_amount": "2835.00",
+        "flat_units": "49.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C20-FF",
+        "total_amount": "1944.00",
+        "flat_units": "3.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C20-GF",
+        "total_amount": "2490.00",
+        "flat_units": "30.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C20-SF",
+        "total_amount": "2853.00",
+        "flat_units": "50.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C7-FF",
+        "total_amount": "3417.00",
+        "flat_units": "82.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C7-GF",
+        "total_amount": "2600.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C7-SF",
+        "total_amount": "2600.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C8-FF",
+        "total_amount": "2600.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C8-GF",
+        "total_amount": "2600.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C8-SF",
+        "total_amount": "2600.00",
+        "flat_units": "0.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C9-FF",
+        "total_amount": "4090.00",
+        "flat_units": "149.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C9-GF",
+        "total_amount": "4726.00",
+        "flat_units": "212.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "C9-SF",
+        "total_amount": "3108.00",
+        "flat_units": "52.00",
+        "motor_units": "316.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D1-FF",
+        "total_amount": "1692.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D1-GF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D1-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D2-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D2-GF",
+        "total_amount": "2783.00",
+        "flat_units": "52.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D2-SF",
+        "total_amount": "3255.00",
+        "flat_units": "83.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D3-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D3-GF",
+        "total_amount": "2601.00",
+        "flat_units": "43.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D3-SF",
+        "total_amount": "1686.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D4-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D4-GF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "D4-SF",
+        "total_amount": "2725.00",
+        "flat_units": "50.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E21-FF",
+        "total_amount": "1678.00",
+        "flat_units": "0.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E21-GF",
+        "total_amount": "1947.00",
+        "flat_units": "12.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E21-SF",
+        "total_amount": "1678.00",
+        "flat_units": "0.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E22-FF",
+        "total_amount": "2001.00",
+        "flat_units": "15.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E22-GF",
+        "total_amount": "2365.00",
+        "flat_units": "34.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E22-SF",
+        "total_amount": "1678.00",
+        "flat_units": "0.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E23-FF",
+        "total_amount": "2529.00",
+        "flat_units": "48.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E23-GF",
+        "total_amount": "2183.00",
+        "flat_units": "25.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E23-SF",
+        "total_amount": "1728.00",
+        "flat_units": "2.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E24-FF",
+        "total_amount": "1678.00",
+        "flat_units": "0.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E24-GF",
+        "total_amount": "1678.00",
+        "flat_units": "0.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "E24-SF",
+        "total_amount": "2020.00",
+        "flat_units": "16.00",
+        "motor_units": "562.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F1-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F1-GF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F1-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F2-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F2-GF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F2-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F3-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F3-GF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F3-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F4-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F4-GF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F4-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F5-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F6-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "358.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F7-FF",
+        "total_amount": "1570.00",
+        "flat_units": "7.00",
+        "motor_units": "84.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F7-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "84.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F8-FF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "84.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F8-GF",
+        "total_amount": "1818.00",
+        "flat_units": "25.00",
+        "motor_units": "84.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F8-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "84.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F9-FF",
+        "total_amount": "1708.00",
+        "flat_units": "17.00",
+        "motor_units": "84.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F9-GF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "84.00",
+        "tenant_name": null
+    },
+    {
+        "flat_code": "F9-SF",
+        "total_amount": "1474.00",
+        "flat_units": "0.00",
+        "motor_units": "84.00",
+        "tenant_name": null
+    }
+]

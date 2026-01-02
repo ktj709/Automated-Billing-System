@@ -1,0 +1,302 @@
+[
+    {
+        "code": "D8-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "D8-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "D8-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "D9-FF",
+        "total_amount": 1886.00,
+        "status": "pending"
+    },
+    {
+        "code": "D9-GF",
+        "total_amount": 2024.00,
+        "status": "pending"
+    },
+    {
+        "code": "D9-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F10-FF",
+        "total_amount": 1515.00,
+        "status": "pending"
+    },
+    {
+        "code": "F10-GF",
+        "total_amount": 1488.00,
+        "status": "pending"
+    },
+    {
+        "code": "F10-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F15-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F15-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F15-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F16-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F16-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F16-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F17-FF",
+        "total_amount": 2300.00,
+        "status": "pending"
+    },
+    {
+        "code": "F17-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F17-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F18-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F18-GF",
+        "total_amount": 4226.00,
+        "status": "pending"
+    },
+    {
+        "code": "F18-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F19-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F19-GF",
+        "total_amount": 1815.00,
+        "status": "pending"
+    },
+    {
+        "code": "F19-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F2-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F2-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F2-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F20-FF",
+        "total_amount": 1810.00,
+        "status": "pending"
+    },
+    {
+        "code": "F20-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F20-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F21-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F21-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F21-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F22-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F22-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F22-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F23-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F23-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F23-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F3-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F3-GF",
+        "total_amount": 1779.00,
+        "status": "pending"
+    },
+    {
+        "code": "F3-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F4-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F4-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F4-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F5-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F5-GF",
+        "total_amount": 1492.00,
+        "status": "pending"
+    },
+    {
+        "code": "F5-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F6-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F6-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F6-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F7-FF",
+        "total_amount": 1570.00,
+        "status": "pending"
+    },
+    {
+        "code": "F7-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F7-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F8-FF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F8-GF",
+        "total_amount": 1818.00,
+        "status": "pending"
+    },
+    {
+        "code": "F8-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F9-FF",
+        "total_amount": 1708.00,
+        "status": "pending"
+    },
+    {
+        "code": "F9-GF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    },
+    {
+        "code": "F9-SF",
+        "total_amount": 1474.00,
+        "status": "pending"
+    }
+]
